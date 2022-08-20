@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+use App\Exceptions\InvalidLoginException;
 
 class LoginRequest extends FormRequest
 {
@@ -39,7 +39,7 @@ class LoginRequest extends FormRequest
      *
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws App\Exceptions\InvalidLoginException
      */
     public function authenticate()
     {
@@ -48,9 +48,7 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
+            throw new InvalidLoginException("Wrong email or password. Try again!");
         }
 
         RateLimiter::clear($this->throttleKey());
@@ -61,7 +59,7 @@ class LoginRequest extends FormRequest
      *
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws App\Exceptions\InvalidLoginException
      */
     public function ensureIsNotRateLimited()
     {
@@ -73,12 +71,10 @@ class LoginRequest extends FormRequest
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
-        throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
-        ]);
+		throw new InvalidLoginException(trans('auth.throttle', [
+					'seconds' => $seconds,
+					'minutes' => ceil($seconds / 60),
+				]));
     }
 
     /**

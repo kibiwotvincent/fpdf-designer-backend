@@ -38,6 +38,6 @@ class RegisteredUserController extends Controller
 	   //create access token
 	   $user->createToken($request->ip())->plainTextToken;
 
-        return new UserResource($user);
+        return (new UserResource($user))->response()->setStatusCode(200);
     }
 }

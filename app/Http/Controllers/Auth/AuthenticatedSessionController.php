@@ -20,12 +20,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-		//return new UserResource(User::find(1));
         $request->authenticate();
-
-        //$request->session()->regenerate();
-
-        return new UserResource($request->user());
+		$user = $request->user();
+		$authToken = $user->createToken("API Auth Token")->plainTextToken;
+         return response()->json(['id' => $user->id, 'email' => $user->email, 'token' => $authToken], 200);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Document;
+use App\Lib\Fpdf\PDF;
 
 class DocumentController extends Controller
 {
@@ -77,4 +78,8 @@ class DocumentController extends Controller
 		$document->save();
 		return response()->json(['message' => "Document has been updated successfully."], 200);
     }
+	
+	public function preview(Request $request) {
+		new PDF($request->id);
+	}
 }

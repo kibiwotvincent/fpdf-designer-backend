@@ -36,7 +36,7 @@ Route::get('/templates/{id}', function (Request $request) {
 					['type' => 'image', 'left' => 0, 'top' => 0, 'width' => 180, 'height' => 120, 
 					'url' => "http://localhost:8000/logo.png"],
 					['type' => 'text', 'left' => 600, 'top' => 10, 'width' => 116, 'height' => 50, 'text' => "INVOICE", 
-					'font_weight' => 'bold','font_size' => 18,'background_color' => '#fffffffff', 'padding_right' => '0',
+					'font_weight' => 'bold','font_size' => 18,'background_color' => '#ffffff', 'padding_right' => '0',
 					'text_align' => 'right'],
 					['type' => 'text','left' => 0, 'top' => 130, 'width' => 340, 'height' => 35, 'text' => "OUR INFORMATION", 
 					'font_weight' => 'bold','font_color' => '#2E3E4E','padding_bottom' => '15', 
@@ -105,4 +105,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/documents/save', [DocumentController::class, 'store']);
 	Route::get('/documents/{id}', [DocumentController::class, 'load']);
 	Route::post('/documents/update', [DocumentController::class, 'update']);
+	//Route::get('/documents/{id}/preview', [DocumentController::class, 'preview']);
 });
+
+Route::get('/documents/{id}/preview', [DocumentController::class, 'preview']);

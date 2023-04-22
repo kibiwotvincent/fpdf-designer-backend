@@ -21,6 +21,11 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/fonts', function (Request $request) {
+	$fonts = ['Arial','Calibri','Helvetica','Times'];
+    return response()->json($fonts);
+});
+
 Route::get('/templates', function (Request $request) {
 	//sleep(3);
 	$templates = [

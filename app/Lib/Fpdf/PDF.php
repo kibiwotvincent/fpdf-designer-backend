@@ -57,28 +57,34 @@ class PDF
 			$height = $draggable['height'] * $scaleFactor;
 				
 			if($draggable['type'] == 'text') {
-				$fontSize = $draggable['font_size'] ?? 10;
+				$fontSize = $draggable['font_size'];
 				$fontWeight = $draggable['font_weight'] == 'bold' ? 'b' : '';
-				$fontColor = (isset($draggable['font_color']) && $draggable['font_color'] != '') ? $this->hexToRgb($draggable['font_color']) : [0,0,0];
-				$backgroundColor = (isset($draggable['background_color']) && $draggable['background_color'] != '') ? $this->hexToRgb($draggable['background_color']) : [255,255,255];
-				$borderColor = (isset($draggable['border_color']) && $draggable['border_color'] != '') ? $this->hexToRgb($draggable['border_color']) : [0,0,0];
+				$fontColor = $this->hexToRgb($draggable['font_color']);
+				$fillBackground = ($draggable['background'] != 'none');
+				$borderColor = $this->hexToRgb($draggable['border_color']);
+				$textAlign = ucwords($draggable['text_align'][0]);
+				
 				$border = '';
-				if((isset($draggable['border_bottom']) && $draggable['border_bottom'] == '1')) $border .= 'B';
-				if(isset($draggable['border_weight']) && $draggable['border_weight'] != '') {
-					$this->pdf->SetLineWidth($draggable['border_weight'] * $scaleFactor);
+				$this->pdf->SetLineWidth($draggable['border_weight'] * $scaleFactor);
+				foreach(['left','top','right','bottom'] as $key) {
+					if($draggable['border_'.$key] != 'yes') continue;
+					
+					$border .= ucfirst($key[0]);
 				}
 				
-				$textAlign = isset($draggable['text_align']) && $draggable['text_align'] != '' ? ucwords($draggable['text_align'][0]) : 'L';
+				if($fillBackground) {
+					$backgroundColor = $this->hexToRgb($draggable['background_color']);
+					$this->pdf->SetFillColor($backgroundColor[0], $backgroundColor[1], $backgroundColor[2]);
+				}
 				
 				$this->pdf->SetXY($left, $top);
 				$this->pdf->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2]);
-				$this->pdf->SetFillColor($backgroundColor[0], $backgroundColor[1], $backgroundColor[2]);
 				$this->pdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-				$this->pdf->SetFont('helvetica', $fontWeight, $fontSize);
+				$this->pdf->SetFont($draggable['font_family'], $fontWeight, $fontSize);
 				$text = iconv("UTF-8", "CP1252//TRANSLIT", $draggable['text']);
 				
-				//$this->pdf->Cell($width, $height, $draggable['text'], $border, 0, $textAlign, $fill = true);
-				$this->pdf->MultiCell($width, $height, $text, $border, $textAlign, $fill = true);
+				//$this->pdf->Cell($width, $height, $draggable['text'], $border, 0, $textAlign, $fillBackground);
+				$this->pdf->MultiCell($width, $height, $text, $border, $textAlign, $fillBackground);
 			}
 			elseif($draggable['type'] == 'image') {
 				$this->pdf->SetXY($left, $top);

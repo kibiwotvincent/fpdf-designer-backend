@@ -18,7 +18,7 @@ class Document extends Model
         'user_id',
         'uuid',
 		'name',
-        'page',
+        'page_settings',
 		'draggables'
     ];
 	
@@ -29,7 +29,6 @@ class Document extends Model
      */
     protected $casts = [
         'deleted_at' => 'datetime',
-        'page' => 'array',
         'draggables' => 'array',
     ];
 }

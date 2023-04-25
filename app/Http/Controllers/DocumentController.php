@@ -34,7 +34,7 @@ class DocumentController extends Controller
     public function load(Request $request)
     {
         $document = Document::where('uuid', $request->id)->first();
-		return response()->json(['draggables' => $document->draggables], 200);
+		return response()->json(['name' => $document->name, 'id' => $document->uuid, 'page_settings' => $document->page_settings, 'draggables' => $document->draggables], 200);
     }
 	
     /**
@@ -55,7 +55,7 @@ class DocumentController extends Controller
 						'user_id' => $userID,
 						'uuid' => md5(time().$userID),
 						'name' => $documentArray['name'],
-						'page' => $documentArray['page'],
+						'page_settings' => $documentArray['page_settings'],
 						'draggables' => $documentArray['draggables'],
 					]);
 		return response()->json(['message' => "Document has been saved successfully."], 200);
@@ -73,7 +73,7 @@ class DocumentController extends Controller
     {
 		$documentArray = $request->document;
         $document = Document::where('uuid', $request->id)->first();
-		$document->page = $documentArray['page'];
+		$document->page_settings = $documentArray['page_settings'];
 		$document->draggables = $documentArray['draggables'];
 		$document->save();
 		return response()->json(['message' => "Document has been updated successfully."], 200);

@@ -18,7 +18,7 @@ class CreateDocumentsTable extends Migration
             $table->integer('user_id');
             $table->string('uuid')->unique();
             $table->string('name');
-            $table->text('page');
+            $table->text('page_settings');
             $table->text('draggables');
             $table->softDeletes();
             $table->timestamps();

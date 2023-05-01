@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,8 +39,15 @@ Route::get('/page/setup', function (Request $request) {
     return response()->json(['page_sizes' => $pageSizes, 'page_margins' => $pageMargins, 'fonts' => $fonts]);
 });
 
-Route::get('/templates', [DocumentController::class, 'index']);
-Route::get('/templates/{id}', [DocumentController::class, 'load']);
+Route::get('/settings/init', [SettingController::class, 'init']);
+Route::get('/workspace/init/blank', [WorkspaceController::class, 'initBlank']);
+Route::get('/workspace/init/{source}/{uuid}', [WorkspaceController::class, 'initFromSource']);
+Route::get('/workspace/{uuid}', [WorkspaceController::class, 'load']);
+Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
+Route::post('/workspace/{uuid}/reset', [WorkspaceController::class, 'reset']);
+
+Route::get('/templates', [TemplateController::class, 'index']);
+Route::get('/templates/{id}', [TemplateController::class, 'load']);
 
 Route::post('/users/register', [RegisteredUserController::class, 'store']);
 Route::post('/users/login', [AuthenticatedSessionController::class, 'store']);

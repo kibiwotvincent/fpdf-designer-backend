@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Document extends Model
+class Template extends Model
 {
     use HasFactory, SoftDeletes;
 	
@@ -16,7 +16,7 @@ class Document extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
+        'owner_id',
         'uuid',
 		'name',
         'page_settings',
@@ -30,7 +30,7 @@ class Document extends Model
      */
     protected $casts = [
         'deleted_at' => 'datetime',
-        'page_settings' => 'array',
         'draggables' => 'array',
+		'page_settings' => 'array',
     ];
 }

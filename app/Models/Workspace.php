@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Document extends Model
+class Workspace extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 	
 	/**
      * The attributes that are mass assignable.
@@ -16,11 +15,12 @@ class Document extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
         'uuid',
 		'name',
         'page_settings',
-		'draggables'
+		'draggables',
+		'source',
+		'template_id'
     ];
 	
 	/**
@@ -29,8 +29,7 @@ class Document extends Model
      * @var array
      */
     protected $casts = [
-        'deleted_at' => 'datetime',
-        'page_settings' => 'array',
         'draggables' => 'array',
+		'page_settings' => 'array',
     ];
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Workspace;
 use App\Models\Setting;
 use App\Models\Document;
+use App\Models\Template;
 use App\Http\Resources\WorkspaceResource;
 
 class WorkspaceController extends Controller
@@ -34,7 +35,12 @@ class WorkspaceController extends Controller
 										'draggables' => [],
 										]);
 										
-		return new WorkspaceResource($workspace);
+		$setup['fonts'] = json_decode($settings['fonts']);
+		$setup['page_sizes'] = json_decode($settings['page_sizes']);
+		$setup['page_margins'] = json_decode($settings['page_margins']);
+		$defaults['defaults']['text'] = json_decode($settings['text_defaults']);
+		$defaults['defaults']['page'] = json_decode($settings['page_defaults']);
+		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	
 	/**
@@ -55,22 +61,23 @@ class WorkspaceController extends Controller
 		if($source == 'templates') {
 			$data = Template::where('uuid', $request->uuid)->first();
 			$name = null;
+			$uuid = md5(time().rand(111111, 999999));
 			$source = 'templates';
 			$templateID = $data->uuid;
 		}
 		else {
 			$data = Document::where('uuid', $request->uuid)->first();
 			$name = $data->name;
+			$uuid = $data->uuid;
 			$source = 'documents';
 			$templateID = null;
+			//delete existing workspace of the same document
+			Workspace::where('uuid', $data->uuid)->delete();
 		}
 		
-		//delete existing workspace
-		Workspace::where('uuid', $data->uuid)->delete();
-		
-		//create a workspace with default page settings
+		//create a workspace with duplicate data from source
         $workspace = Workspace::create([
-										'uuid' => $data->uuid,
+										'uuid' => $uuid,
 										'name' => $name,
 										'page_settings' => $data->page_settings,
 										'draggables' => $data->draggables,
@@ -78,7 +85,12 @@ class WorkspaceController extends Controller
 										'template_id' => $templateID,
 										]);
 										
-		return new WorkspaceResource($workspace);
+		$setup['fonts'] = json_decode($settings['fonts']);
+		$setup['page_sizes'] = json_decode($settings['page_sizes']);
+		$setup['page_margins'] = json_decode($settings['page_margins']);
+		$defaults['defaults']['text'] = json_decode($settings['text_defaults']);
+		$defaults['defaults']['page'] = json_decode($settings['page_defaults']);
+		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	
 	/**

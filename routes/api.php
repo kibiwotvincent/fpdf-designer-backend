@@ -43,21 +43,17 @@ Route::get('/settings/init', [SettingController::class, 'init']);
 Route::get('/workspace/init/blank', [WorkspaceController::class, 'initBlank']);
 Route::get('/workspace/init/{source}/{uuid}', [WorkspaceController::class, 'initFromSource']);
 Route::get('/workspace/{uuid}', [WorkspaceController::class, 'load']);
-Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
 Route::post('/workspace/{uuid}/reset', [WorkspaceController::class, 'reset']);
+Route::post('/workspace/{uuid}/preview', [WorkspaceController::class, 'preview']);
 
 Route::get('/templates', [TemplateController::class, 'index']);
-Route::get('/templates/{id}', [TemplateController::class, 'load']);
-
+Route::get('/templates/{uuid}', [TemplateController::class, 'load']);
 Route::post('/users/register', [RegisteredUserController::class, 'store']);
 Route::post('/users/login', [AuthenticatedSessionController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/documents', [DocumentController::class, 'index']);
-	Route::post('/documents/save', [DocumentController::class, 'store']);
-	Route::get('/documents/{id}', [DocumentController::class, 'load']);
-	Route::post('/documents/update', [DocumentController::class, 'update']);
-	//Route::get('/documents/{id}/preview', [DocumentController::class, 'preview']);
+	Route::post('/documents/{uuid}/update', [DocumentController::class, 'update']);
+	Route::get('/documents/{uuid}/preview', [DocumentController::class, 'preview']);
+	Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
 });
-
-Route::get('/documents/{id}/preview', [DocumentController::class, 'preview']);

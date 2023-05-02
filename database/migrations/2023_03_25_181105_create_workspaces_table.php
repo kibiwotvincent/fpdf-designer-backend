@@ -20,7 +20,7 @@ class CreateWorkspacesTable extends Migration
             $table->text('page_settings');
             $table->text('draggables');
             $table->string('source')->nullable();
-            $table->integer('template_id')->nullable();
+            $table->string('template_id')->nullable();
             $table->timestamps();
         });
     }

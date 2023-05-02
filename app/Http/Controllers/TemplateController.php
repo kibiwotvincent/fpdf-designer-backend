@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Template;
 use App\Lib\Fpdf\PDF;
+use App\Http\Resources\TemplateResource;
 
 class TemplateController extends Controller
 {
@@ -20,7 +21,7 @@ class TemplateController extends Controller
     public function index(Request $request)
     {
         $templates = Template::get();
-		return response()->json($templates, 200);
+		return TemplateResource::collection($templates);
     }
 	
 	/**
@@ -33,7 +34,7 @@ class TemplateController extends Controller
      */
     public function load(Request $request)
     {
-        $template = Template::where('uuid', $request->id)->first();
+        $template = Template::where('uuid', $request->uuid)->first();
 		return response()->json(['name' => $template->name, 'id' => $template->uuid, 'page_settings' => $template->page_settings, 'draggables' => $template->draggables], 200);
     }
 	

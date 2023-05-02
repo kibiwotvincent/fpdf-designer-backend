@@ -18,6 +18,7 @@ class CreateTemplatesTable extends Migration
             $table->integer('owner_id');
             $table->string('uuid')->unique();
             $table->string('name');
+            $table->string('thumbnail');
             $table->text('page_settings');
             $table->text('draggables');
             $table->softDeletes();

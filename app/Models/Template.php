@@ -20,7 +20,8 @@ class Template extends Model
         'uuid',
 		'name',
         'page_settings',
-		'draggables'
+		'draggables',
+		'thumbnail',
     ];
 	
 	/**

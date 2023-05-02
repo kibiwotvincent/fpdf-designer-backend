@@ -6,65 +6,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Document;
 use App\Lib\Fpdf\PDF;
+use App\Http\Resources\DocumentResource;
 
 class DocumentController extends Controller
 {
 	/**
-     * Handle an incoming load document request.
+     * Fetch user documents.
      *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function index(Request $request)
     {
         $documents = Document::get();
-		return response()->json($documents, 200);
+		return DocumentResource::collection($documents);
     }
 	
 	/**
-     * Handle an incoming load document request.
+     * Handle an incoming update document request.
      *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
-     * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function load(Request $request)
-    {
-        $document = Document::where('uuid', $request->id)->first();
-		return response()->json(['name' => $document->name, 'id' => $document->uuid, 'page_settings' => $document->page_settings, 'draggables' => $document->draggables], 200);
-    }
-	
-    /**
-     * Handle an incoming create plan request.
-     *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
-     * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request)
-    {
-		Log::info($request->document);
-		$user = $request->user();
-		$documentArray = $request->document;
-		$userID = 1;//$user->id;
-        Document::create([
-						'user_id' => $userID,
-						'uuid' => md5(time().$userID),
-						'name' => $documentArray['name'],
-						'page_settings' => $documentArray['page_settings'],
-						'draggables' => $documentArray['draggables'],
-					]);
-		return response()->json(['message' => "Document has been saved successfully."], 200);
-    }
-	
-	/**
-     * Handle an incoming create plan request.
-     *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -79,7 +40,7 @@ class DocumentController extends Controller
 		return response()->json(['message' => "Document has been updated successfully."], 200);
     }
 	
-	public function preview(Request $request) {
+	public function download(Request $request) {
 		new PDF($request->id);
 	}
 }

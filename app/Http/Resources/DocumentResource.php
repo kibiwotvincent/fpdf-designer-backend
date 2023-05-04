@@ -24,7 +24,7 @@ class DocumentResource extends JsonResource
         return [
 				'id' => $this->uuid,
 				'name' => $this->name,
-				'thumbnail' => url('storage/documents/'.$this->thumbnail),
+				'thumbnail' => url('storage/documents/image_'.$this->thumbnail),
 				'page_settings' => $this->page_settings,
 				'draggables' => $this->draggables,
 				];

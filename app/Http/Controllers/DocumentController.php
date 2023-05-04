@@ -40,7 +40,16 @@ class DocumentController extends Controller
 		return response()->json(['message' => "Document has been updated successfully."], 200);
     }
 	
-	public function download(Request $request) {
-		new PDF($request->id);
+	/**
+     * Create document pdf on the fly and force browser to download.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+	public function viewPdf(Request $request) {
+		$document = Document::where('uuid', $request->uuid)->first();
+		new PDF($document);
 	}
 }

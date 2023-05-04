@@ -9,9 +9,11 @@ class PDF
 	protected $pageWidth = 210;
 	protected $pdf = null;
 	protected $document = null;
+	protected $save = false;
 	
-	public function __construct($documentID) {
-		$this->document = Document::where('uuid', $documentID)->first();
+	public function __construct($document, $save = false) {
+		$this->document = $document;
+		$this->save = $save;
 		$this->pdf = new FPDF('P','mm','A4');
 		$this->create();
 	}
@@ -23,30 +25,16 @@ class PDF
 		$this->pdf->AddPage();	
 		//insert data
 		$this->addData();
-					
-		$this->pdf->Output('D', 'Doc1.pdf');
+		if($this->save) {
+			$this->pdf->Output('F', storage_path().'\app\public\documents\pdf_'.$this->document->uuid.'.pdf');
+		}
+		else {
+			header('Access-Control-Allow-Origin: *');
+			$this->pdf->Output('D', $this->document->uuid.'.pdf');
+		}
 	}
 	
 	private function addData() {
-		$labels = [
-					['x' => 48, 'y' => 49.5, 'value' => "##"], ['x' => 127, 'y' => 50, 'value' => "##"],
-					['x' => 33, 'y' => 56, 'value' => "##"],
-					['x' => 37, 'y' => 63, 'value' => "##"], ['x' => 66, 'y' => 63, 'value' => "##"],
-					['x' => 50, 'y' => 69, 'value' => "##"],
-					
-					['x' => 43, 'y' => 85, 'value' => "##"],
-					['x' => 36, 'y' => 91, 'value' => "##"],
-					
-					['x' => 90, 'y' => 102, 'value' => "##"],
-					['x' => 38, 'y' => 108, 'value' => "##"],
-					['x' => 21, 'y' => 118, 'value' => "##"],
-					['x' => 42, 'y' => 125, 'value' => "##"],
-					['x' => 33, 'y' => 130, 'value' => "##"],
-					
-					['x' => 53, 'y' => 153, 'value' => "##"],
-					['x' => 25, 'y' => 236, 'value' => "##"], ['x' => 115, 'y' => 236, 'value' => "##"],
-					
-				   ];
 		foreach($this->document->draggables as $draggable):
 			$scaleFactor = 190/718; //1px equivalent in milimeters
 			$margin = 38 * $scaleFactor; //38 is margin in px

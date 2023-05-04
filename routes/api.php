@@ -44,7 +44,7 @@ Route::get('/workspace/init/blank', [WorkspaceController::class, 'initBlank']);
 Route::get('/workspace/init/{source}/{uuid}', [WorkspaceController::class, 'initFromSource']);
 Route::get('/workspace/{uuid}', [WorkspaceController::class, 'load']);
 Route::post('/workspace/{uuid}/reset', [WorkspaceController::class, 'reset']);
-Route::post('/workspace/{uuid}/preview', [WorkspaceController::class, 'preview']);
+Route::get('/workspace/{uuid}/preview', [WorkspaceController::class, 'preview']);
 
 Route::get('/templates', [TemplateController::class, 'index']);
 Route::get('/templates/{uuid}', [TemplateController::class, 'load']);
@@ -54,6 +54,6 @@ Route::post('/users/login', [AuthenticatedSessionController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/documents', [DocumentController::class, 'index']);
 	Route::post('/documents/{uuid}/update', [DocumentController::class, 'update']);
-	Route::get('/documents/{uuid}/preview', [DocumentController::class, 'preview']);
+	Route::get('/documents/{uuid}/view-pdf', [DocumentController::class, 'viewPdf']);
 	Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
 });

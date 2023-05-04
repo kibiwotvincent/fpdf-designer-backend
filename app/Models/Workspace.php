@@ -32,4 +32,5 @@ class Workspace extends Model
         'draggables' => 'array',
 		'page_settings' => 'array',
     ];
+	
 }

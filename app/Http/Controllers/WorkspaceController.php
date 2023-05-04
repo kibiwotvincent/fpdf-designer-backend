@@ -8,6 +8,8 @@ use App\Models\Setting;
 use App\Models\Document;
 use App\Models\Template;
 use App\Http\Resources\WorkspaceResource;
+use App\Events\DocumentSaved;
+use App\Lib\Fpdf\PDF;
 
 class WorkspaceController extends Controller
 {
@@ -127,6 +129,7 @@ class WorkspaceController extends Controller
 			$document = Document::where('uuid', $workspace->uuid)->first();
 			$document->page_settings = $workspaceArray['page_settings'];
 			$document->draggables = $workspaceArray['draggables'];
+			$document->thumbnail = md5(time().rand(111111, 999999)).".png";
 			$document->save();
 		}
 		else {
@@ -136,11 +139,13 @@ class WorkspaceController extends Controller
 			$document = Document::create([
 							'user_id' => $user->id,
 							'uuid' => $workspace->uuid,
-							'name' => $workspaceArray['name'],
+							'name' => $workspaceArray['name'].'lkgl',
 							'page_settings' => $workspaceArray['page_settings'],
 							'draggables' => $workspaceArray['draggables'],
+							'thumbnail' => md5(time().rand(111111, 999999)).".png",
 						]);
 		}
+		DocumentSaved::dispatch($document);
 		return new WorkspaceResource($workspace);
     }
 	
@@ -175,4 +180,8 @@ class WorkspaceController extends Controller
 		return new WorkspaceResource($workspace);
     }
 	
+	public function preview(Request $request) {
+		$workspace = Workspace::where('uuid', $request->uuid)->first();
+		new PDF($workspace);
+	}
 }

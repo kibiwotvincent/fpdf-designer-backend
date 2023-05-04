@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Lib\Fpdf\PDF;
 
 class Document extends Model
 {
@@ -34,4 +35,14 @@ class Document extends Model
         'page_settings' => 'array',
         'draggables' => 'array',
     ];
+	
+	public function createPdf() {
+		new PDF($this, true);
+	}
+	
+	public function createPdfImage() {
+		$imagick = new \Imagick();
+		$imagick->readImage(storage_path().'\app\public\documents\pdf_'.$this->uuid.'.pdf[0]');
+		$imagick->writeImage(storage_path().'\app\public\documents\image_'.$this->thumbnail);
+	}
 }

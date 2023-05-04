@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-	dd(phpinfo());
+	dd(storage_path());
     return ['Laravel' => app()->version()];
 });
 

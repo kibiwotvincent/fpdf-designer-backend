@@ -10,6 +10,7 @@ use App\Models\Template;
 use App\Http\Resources\WorkspaceResource;
 use App\Events\DocumentSaved;
 use App\Lib\Fpdf\PDF;
+use App\Http\Requests\SaveDocumentRequest;
 
 class WorkspaceController extends Controller
 {
@@ -115,33 +116,34 @@ class WorkspaceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      *
      */
-    public function save(Request $request)
-    {
-		$workspaceArray = $request->document;
+    public function save(SaveDocumentRequest $request)
+    {	
+		$pageSettings = $request->page_settings;
+		$draggables = $request->draggables;
+		
         $workspace = Workspace::where('uuid', $request->uuid)->first();
-		$workspace->name = $workspaceArray['name'];
-		$workspace->page_settings = $workspaceArray['page_settings'];
-		$workspace->draggables = $workspaceArray['draggables'];
+		$workspace->name = $request->name;
+		$workspace->page_settings = $pageSettings;
+		$workspace->draggables = $draggables;
 		$workspace->save();
 		//save into documents table
-		if($workspace->source == 'documents') {
+		$document = Document::where('uuid', $workspace->uuid)->first();
+		if(isset($document->id)) {
 			//update existing record
-			$document = Document::where('uuid', $workspace->uuid)->first();
-			$document->page_settings = $workspaceArray['page_settings'];
-			$document->draggables = $workspaceArray['draggables'];
+			$document->page_settings = $pageSettings;
+			$document->draggables = $draggables;
 			$document->thumbnail = md5(time().rand(111111, 999999)).".png";
 			$document->save();
 		}
 		else {
 			//create new record
 			$user = $request->user();
-			$documentArray = $request->document;
 			$document = Document::create([
 							'user_id' => $user->id,
-							'uuid' => $workspace->uuid,
-							'name' => $workspaceArray['name'].'lkgl',
-							'page_settings' => $workspaceArray['page_settings'],
-							'draggables' => $workspaceArray['draggables'],
+							'uuid' => $request->uuid,
+							'name' => $request->name,
+							'page_settings' => $pageSettings,
+							'draggables' => $draggables,
 							'thumbnail' => md5(time().rand(111111, 999999)).".png",
 						]);
 		}
@@ -180,6 +182,13 @@ class WorkspaceController extends Controller
 		return new WorkspaceResource($workspace);
     }
 	
+	/**
+     * Handle an incoming document preview request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     */
 	public function preview(Request $request) {
 		$workspace = Workspace::where('uuid', $request->uuid)->first();
 		new PDF($workspace);

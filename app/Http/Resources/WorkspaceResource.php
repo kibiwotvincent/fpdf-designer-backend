@@ -23,7 +23,7 @@ class WorkspaceResource extends JsonResource
     {	
         return [
 				'id' => $this->uuid,
-				'name' => $this->name,
+				'name' => $this->name == null ? '' : $this->name,
 				'page_settings' => $this->page_settings,
 				'draggables' => $this->draggables,
 				];

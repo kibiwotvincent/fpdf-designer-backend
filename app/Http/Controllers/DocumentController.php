@@ -18,7 +18,7 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $documents = Document::get();
+        $documents = $request->user()->documents;
 		return DocumentResource::collection($documents);
     }
 	

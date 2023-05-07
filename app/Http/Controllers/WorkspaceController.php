@@ -42,8 +42,8 @@ class WorkspaceController extends Controller
 		$setup['fonts'] = json_decode($settings['fonts']);
 		$setup['page_sizes'] = json_decode($settings['page_sizes']);
 		$setup['page_margins'] = json_decode($settings['page_margins']);
-		$defaults['defaults']['text'] = json_decode($settings['text_defaults']);
-		$defaults['defaults']['page'] = json_decode($settings['page_defaults']);
+		$defaults['text'] = json_decode($settings['text_defaults']);
+		$defaults['page'] = json_decode($settings['page_defaults']);
 		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	
@@ -92,8 +92,8 @@ class WorkspaceController extends Controller
 		$setup['fonts'] = json_decode($settings['fonts']);
 		$setup['page_sizes'] = json_decode($settings['page_sizes']);
 		$setup['page_margins'] = json_decode($settings['page_margins']);
-		$defaults['defaults']['text'] = json_decode($settings['text_defaults']);
-		$defaults['defaults']['page'] = json_decode($settings['page_defaults']);
+		$defaults['text'] = json_decode($settings['text_defaults']);
+		$defaults['page'] = json_decode($settings['page_defaults']);
 		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	

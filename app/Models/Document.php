@@ -37,25 +37,55 @@ class Document extends Model
         'draggables' => 'array',
     ];
 	
+	/**
+     * Creates document pdf and saves it in server.
+     * 
+     * @param none
+     * @return void
+     */
 	public function createPdf() {
 		new PDF($this, true);
 	}
 	
+	/**
+     * Creates image from the first page of saved pdf document and saves it in server.
+     * 
+     * @param none
+     * @return void
+     */
 	public function createPdfImage() {
 		$imagick = new \Imagick();
 		$imagick->readImage(storage_path().'/app/public/documents/'.$this->uuid.'.pdf[0]');
 		$imagick->writeImage(storage_path().'/app/public/documents/'.$this->thumbnail);
 	}
 	
+	/**
+     * Deletes document files from server.
+     * 
+     * @param none
+     * @return void
+     */
 	public function deleteDocumentFiles() {
 		$this->deletePdf();
 		$this->deleteThumbnail();
 	}
 	
+	/**
+     * Deletes saved pdf from server.
+     * 
+     * @param none
+     * @return void
+     */
 	public function deletePdf() {
 		Storage::delete('/public/documents/'.$this->uuid.'.pdf');
 	}
 	
+	/**
+     * Deletes saved thumbnail from server.
+     * 
+     * @param none
+     * @return void
+     */
 	public function deleteThumbnail() {
 		Storage::delete('/public/documents/'.$this->thumbnail);
 	}

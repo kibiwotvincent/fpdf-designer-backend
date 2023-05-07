@@ -48,9 +48,15 @@ class Document extends Model
 	}
 	
 	public function deleteDocumentFiles() {
-		$documentFiles = [];
-		array_push($documentFiles, '/public/documents/'.$this->uuid.'.pdf');
-		array_push($documentFiles, '/public/documents/'.$this->thumbnail);
-		Storage::delete($documentFiles);
+		$this->deletePdf();
+		$this->deleteThumbnail();
+	}
+	
+	public function deletePdf() {
+		Storage::delete('/public/documents/'.$this->uuid.'.pdf');
+	}
+	
+	public function deleteThumbnail() {
+		Storage::delete('/public/documents/'.$this->thumbnail);
 	}
 }

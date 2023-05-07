@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Models\Template;
 use App\Http\Resources\WorkspaceResource;
 use App\Events\DocumentSaved;
+use App\Events\UpdatingDocument;
 use App\Lib\Fpdf\PDF;
 use App\Http\Requests\SaveDocumentRequest;
 
@@ -129,6 +130,9 @@ class WorkspaceController extends Controller
 		//save into documents table
 		$document = Document::where('uuid', $workspace->uuid)->first();
 		if(isset($document->id)) {
+			//fire an event that will delete existing document thumbnail
+			UpdatingDocument::dispatch($document);
+			
 			//update existing record
 			$document->page_settings = $pageSettings;
 			$document->draggables = $draggables;

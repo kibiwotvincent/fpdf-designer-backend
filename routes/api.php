@@ -53,7 +53,7 @@ Route::post('/users/login', [AuthenticatedSessionController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/documents', [DocumentController::class, 'index']);
-	Route::post('/documents/{uuid}/update', [DocumentController::class, 'update']);
+	Route::post('/documents/{uuid}/rename', [DocumentController::class, 'renameDocument']);
 	Route::get('/documents/{uuid}/view-pdf', [DocumentController::class, 'viewPdf']);
 	Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
 });

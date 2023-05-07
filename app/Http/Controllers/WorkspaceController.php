@@ -112,7 +112,7 @@ class WorkspaceController extends Controller
 	/**
      * Handle an incoming document update request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\SaveDocumentRequest  $request
      * @return \Illuminate\Http\JsonResponse
      *
      */

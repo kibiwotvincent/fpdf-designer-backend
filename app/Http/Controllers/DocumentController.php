@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Document;
 use App\Lib\Fpdf\PDF;
 use App\Http\Resources\DocumentResource;
+use App\Http\Requests\RenameDocumentRequest;
 
 class DocumentController extends Controller
 {
@@ -23,22 +24,20 @@ class DocumentController extends Controller
     }
 	
 	/**
-     * Handle an incoming update document request.
+     * Handle an incoming rename saved document request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\RenameDocumentRequest  $request
      * @return \Illuminate\Http\JsonResponse
-     *
+     * 
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request)
-    {
-		$documentArray = $request->document;
-        $document = Document::where('uuid', $request->id)->first();
-		$document->page_settings = $documentArray['page_settings'];
-		$document->draggables = $documentArray['draggables'];
+    public function renameDocument(RenameDocumentRequest $request)
+    {	
+		$document = Document::where('uuid', $request->uuid)->first();
+		$document->name = $request->name;
 		$document->save();
-		return response()->json(['message' => "Document has been updated successfully."], 200);
-    }
+		return response()->json(['message' => "Document has been renamed successfully."], 200);
+	}
 	
 	/**
      * Create document pdf on the fly and force browser to download.

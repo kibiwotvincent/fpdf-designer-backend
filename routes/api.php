@@ -55,5 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/documents', [DocumentController::class, 'index']);
 	Route::post('/documents/{uuid}/rename', [DocumentController::class, 'renameDocument']);
 	Route::get('/documents/{uuid}/view-pdf', [DocumentController::class, 'viewPdf']);
+	Route::post('/documents/{uuid}/delete', [DocumentController::class, 'destroy']);
 	Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
 });

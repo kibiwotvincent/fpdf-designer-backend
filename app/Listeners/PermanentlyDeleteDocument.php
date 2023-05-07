@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\DocumentSaved;
+use App\Events\DocumentFilesDeleted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Document;
 
-class CreateImageFromPdf implements ShouldQueue
+class PermanentlyDeleteDocument implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -22,16 +22,12 @@ class CreateImageFromPdf implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  \App\Events\DocumentSaved  $event
+     * @param  \App\Events\DocumentFilesDeleted  $event
      * @return void
      */
-    public function handle(DocumentSaved $event)
+    public function handle(DocumentFilesDeleted $event)
     {
-		Storage::makeDirectory('public/documents');
         $document = $event->document;
-		//first create pdf
-		$document->createPdf();
-		//then create thumbnail from pdf
-		$document->createPdfImage();
+		$document->forceDelete();
     }
 }

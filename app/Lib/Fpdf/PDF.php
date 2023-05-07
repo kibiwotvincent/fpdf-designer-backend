@@ -26,7 +26,7 @@ class PDF
 		//insert data
 		$this->addData();
 		if($this->save) {
-			$this->pdf->Output('F', storage_path().'\app\public\documents\pdf_'.$this->document->uuid.'.pdf');
+			$this->pdf->Output('F', storage_path().'/app/public/documents/'.$this->document->uuid.'.pdf');
 		}
 		else {
 			header('Access-Control-Allow-Origin: *');

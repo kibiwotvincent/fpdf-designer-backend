@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Lib\Fpdf\PDF;
 use App\Http\Resources\DocumentResource;
 use App\Http\Requests\RenameDocumentRequest;
+use App\Events\DocumentDeleted;
 
 class DocumentController extends Controller
 {
@@ -50,5 +51,19 @@ class DocumentController extends Controller
 	public function viewPdf(Request $request) {
 		$document = Document::where('uuid', $request->uuid)->first();
 		new PDF($document);
+	}
+	
+	/**
+     * Handle an incoming delete saved document request.
+     *
+     * @param  @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Request $request)
+    {	
+		Document::where('uuid', $request->uuid)->delete();
+		$document = Document::withTrashed()->where('uuid', $request->uuid)->first();
+		DocumentDeleted::dispatch($document);
+		return response()->json(['message' => "Document has been deleted successfully."], 200);
 	}
 }

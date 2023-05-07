@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Lib\Fpdf\PDF;
+use Illuminate\Support\Facades\Storage;
 
 class Document extends Model
 {
@@ -42,7 +43,14 @@ class Document extends Model
 	
 	public function createPdfImage() {
 		$imagick = new \Imagick();
-		$imagick->readImage(storage_path().'\app\public\documents\pdf_'.$this->uuid.'.pdf[0]');
-		$imagick->writeImage(storage_path().'\app\public\documents\image_'.$this->thumbnail);
+		$imagick->readImage(storage_path().'/app/public/documents/'.$this->uuid.'.pdf[0]');
+		$imagick->writeImage(storage_path().'/app/public/documents/'.$this->thumbnail);
+	}
+	
+	public function deleteDocumentFiles() {
+		$documentFiles = [];
+		array_push($documentFiles, '/public/documents/'.$this->uuid.'.pdf');
+		array_push($documentFiles, '/public/documents/'.$this->thumbnail);
+		Storage::delete($documentFiles);
 	}
 }

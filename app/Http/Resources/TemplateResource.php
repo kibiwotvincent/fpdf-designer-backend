@@ -27,7 +27,7 @@ class TemplateResource extends JsonResource
 				'thumbnail' => url('storage/templates/'.$this->thumbnail),
 				'page_settings' => $this->page_settings,
 				'draggables' => $this->draggables,
-				'owner_id' => $this->owner_id,
+				'user_id' => $this->user_id,
 				];
     }
 	

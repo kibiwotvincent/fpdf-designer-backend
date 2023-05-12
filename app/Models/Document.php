@@ -5,12 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Lib\Fpdf\PDF;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Interfaces\DocumentInterface;
+use App\Models\Traits\Documentable;
 
-class Document extends Model
+class Document extends Model implements DocumentInterface
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Documentable;
+	
+	/**
+     * Directory name.
+     *
+     * @var string
+     */
+	public $storageDirectory = "documents";
 	
 	/**
      * The attributes that are mass assignable.
@@ -37,56 +44,4 @@ class Document extends Model
         'draggables' => 'array',
     ];
 	
-	/**
-     * Creates document pdf and saves it in server.
-     * 
-     * @param none
-     * @return void
-     */
-	public function createPdf() {
-		new PDF($this, true);
-	}
-	
-	/**
-     * Creates image from the first page of saved pdf document and saves it in server.
-     * 
-     * @param none
-     * @return void
-     */
-	public function createPdfImage() {
-		$imagick = new \Imagick();
-		$imagick->readImage(storage_path().'/app/public/documents/'.$this->uuid.'.pdf[0]');
-		$imagick->writeImage(storage_path().'/app/public/documents/'.$this->thumbnail);
-	}
-	
-	/**
-     * Deletes document files from server.
-     * 
-     * @param none
-     * @return void
-     */
-	public function deleteDocumentFiles() {
-		$this->deletePdf();
-		$this->deleteThumbnail();
-	}
-	
-	/**
-     * Deletes saved pdf from server.
-     * 
-     * @param none
-     * @return void
-     */
-	public function deletePdf() {
-		Storage::delete('/public/documents/'.$this->uuid.'.pdf');
-	}
-	
-	/**
-     * Deletes saved thumbnail from server.
-     * 
-     * @param none
-     * @return void
-     */
-	public function deleteThumbnail() {
-		Storage::delete('/public/documents/'.$this->thumbnail);
-	}
 }

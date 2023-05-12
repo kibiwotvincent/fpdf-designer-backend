@@ -27,11 +27,14 @@ class CreateImageFromPdf implements ShouldQueue
      */
     public function handle(DocumentSaved $event)
     {
-		Storage::makeDirectory('public/documents');
-        $document = $event->document;
+		$document = $event->document;
+		//create directory if it does not exist
+		Storage::makeDirectory('public/'.$document->storageDirectory);
+        
 		//first create pdf
 		$document->createPdf();
+		
 		//then create thumbnail from pdf
-		$document->createPdfImage();
+		$document->createThumbnail();
     }
 }

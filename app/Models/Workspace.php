@@ -20,7 +20,8 @@ class Workspace extends Model
         'page_settings',
 		'draggables',
 		'source',
-		'template_id'
+		'template_id',
+		'save_as'
     ];
 	
 	/**

@@ -3,20 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Template;
 use App\Lib\Fpdf\PDF;
 use App\Http\Resources\TemplateResource;
+use App\Http\Requests\RenameTemplateRequest;
+use App\Events\DocumentDeleted;
 
 class TemplateController extends Controller
 {
 	/**
-     * Handle an incoming load template request.
+     * Fetch available templates.
      *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function index(Request $request)
     {
@@ -27,10 +26,8 @@ class TemplateController extends Controller
 	/**
      * Handle an incoming load template request.
      *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function load(Request $request)
     {
@@ -38,48 +35,47 @@ class TemplateController extends Controller
 		return response()->json(['name' => $template->name, 'id' => $template->uuid, 'page_settings' => $template->page_settings, 'draggables' => $template->draggables], 200);
     }
 	
-    /**
-     * Handle an incoming create plan request.
+	/**
+     * Handle an incoming rename template request.
      *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
+     * @param  App\Http\Requests\RenameTemplateRequest  $request
      * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
-    {
-		$user = $request->user();
-		$templateArray = $request->template;
-		$userID = 1;//$user->id;
-        Template::create([
-						'owner_id' => $userID,
-						'uuid' => md5(time().$userID),
-						'name' => $templateArray['name'],
-						'page_settings' => $templateArray['page_settings'],
-						'draggables' => $templateArray['draggables'],
-					]);
-		return response()->json(['message' => "Template has been saved successfully."], 200);
-    }
+    public function renameTemplate(RenameTemplateRequest $request)
+    {	
+		$template = Template::where('uuid', $request->uuid)->first();
+		$template->name = $request->name;
+		$template->save();
+		return response()->json(['message' => "Template has been renamed successfully."], 200);
+	}
 	
 	/**
-     * Handle an incoming create plan request.
+     * Create template pdf on the fly and force browser to download.
      *
-     * @param  \App\Http\Requests\Admin\CreatePackageRequest  $request
-     * @return \Illuminate\Http\JsonResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
-    {
-		$templateArray = $request->template;
-        $template = Template::where('uuid', $request->id)->first();
-		$template->page_settings = $templateArray['page_settings'];
-		$template->draggables = $templateArray['draggables'];
-		$template->save();
-		return response()->json(['message' => "Template has been updated successfully."], 200);
-    }
+	public function viewPdf(Request $request) {
+		$template = Template::where('uuid', $request->uuid)->first();
+		new PDF($template);
+	}
 	
-	public function preview(Request $request) {
-		new PDF($request->id);
+	/**
+     * Handle an incoming delete template request.
+     *
+     * @param  @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete(Request $request)
+    {	
+		Template::where('uuid', $request->uuid)->delete();
+		/*
+		* Don't fire DocumentDeleted event that will cause file removal &
+		* permanent template deletion ***for now***
+		* 
+		$template = Template::withTrashed()->where('uuid', $request->uuid)->first();
+		DocumentDeleted::dispatch($template);
+		*/
+		return response()->json(['message' => "Template has been deleted successfully."], 200);
 	}
 }

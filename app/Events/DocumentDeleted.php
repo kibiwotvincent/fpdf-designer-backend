@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Document;
+use App\Models\Interfaces\DocumentInterface;
 
 class DocumentDeleted
 {
@@ -28,7 +28,7 @@ class DocumentDeleted
      * @param \App\Models\Document $document
      * @return void
      */
-    public function __construct(Document $document)
+    public function __construct(DocumentInterface $document)
     {
         $this->document = $document;
     }

@@ -21,6 +21,7 @@ class CreateWorkspacesTable extends Migration
             $table->text('draggables');
             $table->string('source')->nullable();
             $table->string('template_id')->nullable();
+            $table->string('save_as');
             $table->timestamps();
         });
     }

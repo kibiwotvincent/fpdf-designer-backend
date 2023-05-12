@@ -12,6 +12,7 @@ use App\Events\DocumentSaved;
 use App\Events\UpdatingDocument;
 use App\Lib\Fpdf\PDF;
 use App\Http\Requests\SaveDocumentRequest;
+use Auth;
 
 class WorkspaceController extends Controller
 {
@@ -37,6 +38,7 @@ class WorkspaceController extends Controller
 										'uuid' => md5(time().rand(111111, 999999)),
 										'page_settings' => $pageSettings,
 										'draggables' => [],
+										'save_as' => $request->saveAs == "" ? "document" : $request->saveAs,
 										]);
 										
 		$setup['fonts'] = json_decode($settings['fonts']);
@@ -64,7 +66,7 @@ class WorkspaceController extends Controller
 		$source = $request->source;
 		if($source == 'templates') {
 			$data = Template::where('uuid', $request->uuid)->first();
-			$name = null;
+			$name = $request->saveAs == "template" ? $data->name : null;
 			$uuid = md5(time().rand(111111, 999999));
 			$source = 'templates';
 			$templateID = $data->uuid;
@@ -87,6 +89,7 @@ class WorkspaceController extends Controller
 										'draggables' => $data->draggables,
 										'source' => $source,
 										'template_id' => $templateID,
+										'save_as' => $request->saveAs == "" ? "document" : $request->saveAs,
 										]);
 										
 		$setup['fonts'] = json_decode($settings['fonts']);
@@ -119,14 +122,34 @@ class WorkspaceController extends Controller
      */
     public function save(SaveDocumentRequest $request)
     {	
-		$pageSettings = $request->page_settings;
-		$draggables = $request->draggables;
-		
         $workspace = Workspace::where('uuid', $request->uuid)->first();
 		$workspace->name = $request->name;
-		$workspace->page_settings = $pageSettings;
-		$workspace->draggables = $draggables;
+		$workspace->page_settings = $request->page_settings;
+		$workspace->draggables = $request->draggables;
 		$workspace->save();
+		
+		if($workspace->save_as == "template") {
+			$this->saveAsTemplate($workspace);
+		}
+		else {
+			$this->saveAsDocument($workspace);
+		}
+		
+		return new WorkspaceResource($workspace);
+    }
+	
+	/**
+     * Save workspace to documents table.
+     * This means the workspace is user document under design
+     *
+     * @param  App\Models\Workspace  $request
+     * @return void
+     */
+	private function saveAsDocument(Workspace $workspace) {
+		$pageSettings = $workspace->page_settings;
+		$draggables = $workspace->draggables;
+		$thumbnail = md5(time().rand(111111, 999999)).".png";
+		
 		//save into documents table
 		$document = Document::where('uuid', $workspace->uuid)->first();
 		if(isset($document->id)) {
@@ -136,24 +159,63 @@ class WorkspaceController extends Controller
 			//update existing record
 			$document->page_settings = $pageSettings;
 			$document->draggables = $draggables;
-			$document->thumbnail = md5(time().rand(111111, 999999)).".png";
+			$document->thumbnail = $thumbnail;
 			$document->save();
 		}
 		else {
 			//create new record
-			$user = $request->user();
+			$user = request()->user();
 			$document = Document::create([
 							'user_id' => $user->id,
-							'uuid' => $request->uuid,
-							'name' => $request->name,
+							'uuid' => $workspace->uuid,
+							'name' => $workspace->name,
 							'page_settings' => $pageSettings,
 							'draggables' => $draggables,
-							'thumbnail' => md5(time().rand(111111, 999999)).".png",
+							'thumbnail' => $thumbnail,
 						]);
 		}
 		DocumentSaved::dispatch($document);
-		return new WorkspaceResource($workspace);
-    }
+	}
+	
+	/**
+     * Save workspace to templates table.
+     * This means admin is adding/updating template
+     *
+     * @param  App\Models\Workspace  $request
+     * @return void
+     */
+	private function saveAsTemplate(Workspace $workspace) {
+		$pageSettings = $workspace->page_settings;
+		$draggables = $workspace->draggables;
+		$thumbnail = md5(time().rand(111111, 999999)).".png";
+		
+		//save into templates table
+		$uuID = $workspace->save_as == "template" ? $workspace->template_id : $workspace->uuid;
+		$template = Template::where('uuid', $uuID)->first();
+		if(isset($template->id)) {
+			//fire an event that will delete existing template thumbnail
+			UpdatingDocument::dispatch($template);
+			
+			//update existing record
+			$template->page_settings = $pageSettings;
+			$template->draggables = $draggables;
+			$template->thumbnail = $thumbnail;
+			$template->save();
+		}
+		else {
+			//create new record
+			$user = request()->user();
+			$template = Template::create([
+							'user_id' => $user->id,
+							'uuid' => $workspace->uuid,
+							'name' => $workspace->name,
+							'page_settings' => $pageSettings,
+							'draggables' => $draggables,
+							'thumbnail' => $thumbnail,
+						]);
+		}
+		DocumentSaved::dispatch($template);
+	}
 	
 	/**
      * Handle an incoming document reset request.

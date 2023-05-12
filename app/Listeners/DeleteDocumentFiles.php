@@ -28,7 +28,8 @@ class DeleteDocumentFiles implements ShouldQueue
     public function handle(DocumentDeleted $event)
     {
         $document = $event->document;
-		$document->deleteDocumentFiles();
+		$document->deletePdf();
+		$document->deleteThumbnail();
 		DocumentFilesDeleted::dispatch($document);
     }
 }

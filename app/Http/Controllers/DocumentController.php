@@ -59,7 +59,7 @@ class DocumentController extends Controller
      * @param  @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {	
 		Document::where('uuid', $request->uuid)->delete();
 		$document = Document::withTrashed()->where('uuid', $request->uuid)->first();

@@ -5,10 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Interfaces\DocumentInterface;
+use App\Models\Traits\Documentable;
 
-class Template extends Model
+class Template extends Model implements DocumentInterface
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Documentable;
+	
+	/**
+     * Directory name.
+     *
+     * @var string
+     */
+	public $storageDirectory = "templates";
 	
 	/**
      * The attributes that are mass assignable.
@@ -16,7 +25,7 @@ class Template extends Model
      * @var array
      */
     protected $fillable = [
-        'owner_id',
+        'user_id',
         'uuid',
 		'name',
         'page_settings',

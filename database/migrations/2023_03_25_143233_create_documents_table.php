@@ -17,7 +17,7 @@ class CreateDocumentsTable extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('uuid')->unique();
-            $table->string('name')->unique();
+            $table->string('name');
 			$table->string('thumbnail');
             $table->text('page_settings');
             $table->text('draggables');

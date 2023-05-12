@@ -40,8 +40,8 @@ Route::get('/page/setup', function (Request $request) {
 });
 
 Route::get('/settings/init', [SettingController::class, 'init']);
-Route::get('/workspace/init/blank', [WorkspaceController::class, 'initBlank']);
-Route::get('/workspace/init/{source}/{uuid}', [WorkspaceController::class, 'initFromSource']);
+Route::get('/workspace/init/blank/{saveAs?}', [WorkspaceController::class, 'initBlank']);
+Route::get('/workspace/init/{source}/{uuid}/{saveAs?}', [WorkspaceController::class, 'initFromSource']);
 Route::get('/workspace/{uuid}', [WorkspaceController::class, 'load']);
 Route::post('/workspace/{uuid}/reset', [WorkspaceController::class, 'reset']);
 Route::get('/workspace/{uuid}/preview', [WorkspaceController::class, 'preview']);
@@ -55,6 +55,13 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/documents', [DocumentController::class, 'index']);
 	Route::post('/documents/{uuid}/rename', [DocumentController::class, 'renameDocument']);
 	Route::get('/documents/{uuid}/view-pdf', [DocumentController::class, 'viewPdf']);
-	Route::post('/documents/{uuid}/delete', [DocumentController::class, 'destroy']);
+	Route::post('/documents/{uuid}/delete', [DocumentController::class, 'delete']);
 	Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
+	
+	//admin routes
+	Route::get('/admin/templates', [TemplateController::class, 'index']);
+	Route::post('/admin/templates/{uuid}/rename', [TemplateController::class, 'renameTemplate']);
+	Route::get('/admin/templates/{uuid}/view-pdf', [TemplateController::class, 'viewPdf']);
+	Route::post('/admin/templates/{uuid}/delete', [TemplateController::class, 'delete']);
+	
 });

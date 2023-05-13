@@ -21,6 +21,14 @@ interface DocumentInterface
 	public function getStorageDirectory();
 	
 	/**
+     * Preview pdf
+     * 
+     * @param none
+     * @return void
+     */
+	public function previewPdf();
+	
+	/**
      * Create pdf
      * 
      * @param none

@@ -10,7 +10,7 @@ use App\Models\Template;
 use App\Http\Resources\WorkspaceResource;
 use App\Events\DocumentSaved;
 use App\Events\UpdatingDocument;
-use App\Lib\Fpdf\PDF;
+use App\Facades\PDF;
 use App\Http\Requests\SaveDocumentRequest;
 use Auth;
 
@@ -67,7 +67,7 @@ class WorkspaceController extends Controller
 		if($source == 'templates') {
 			$data = Template::where('uuid', $request->uuid)->first();
 			$name = $request->saveAs == "template" ? $data->name : null;
-			$uuid = md5(time().rand(111111, 999999));
+			$uuid = $request->saveAs == "template" ? $data->uuid : md5(time().rand(111111, 999999));
 			$source = 'templates';
 			$templateID = $data->uuid;
 		}
@@ -77,9 +77,9 @@ class WorkspaceController extends Controller
 			$uuid = $data->uuid;
 			$source = 'documents';
 			$templateID = null;
-			//delete existing workspace of the same document
-			Workspace::where('uuid', $data->uuid)->delete();
 		}
+		//delete existing workspace of the same document
+		Workspace::where('uuid', $data->uuid)->delete();
 		
 		//create a workspace with duplicate data from source
         $workspace = Workspace::create([
@@ -257,6 +257,14 @@ class WorkspaceController extends Controller
      */
 	public function preview(Request $request) {
 		$workspace = Workspace::where('uuid', $request->uuid)->first();
-		new PDF($workspace);
+		
+		if($workspace->save_as == "template") {
+			$workspace = Template::where('uuid', $workspace->template_id)->first();
+		}
+		else {
+			$workspace = Document::where('uuid', $workspace->uuid)->first();
+		}
+		
+		PDF::preview($workspace);
 	}
 }

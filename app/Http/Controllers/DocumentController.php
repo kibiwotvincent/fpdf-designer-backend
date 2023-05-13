@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Document;
-use App\Lib\Fpdf\PDF;
 use App\Http\Resources\DocumentResource;
 use App\Http\Requests\RenameDocumentRequest;
 use App\Events\DocumentDeleted;
@@ -50,7 +49,7 @@ class DocumentController extends Controller
      */
 	public function viewPdf(Request $request) {
 		$document = Document::where('uuid', $request->uuid)->first();
-		new PDF($document);
+		$document->previewPdf();
 	}
 	
 	/**

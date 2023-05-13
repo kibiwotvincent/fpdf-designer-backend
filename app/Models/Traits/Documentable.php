@@ -30,8 +30,18 @@ trait Documentable
      * @param none
      * @return void
      */
+	public function previewPdf() {
+		\App\Facades\PDF::preview($this);
+	}
+	
+	/**
+     * Create pdf
+     * 
+     * @param none
+     * @return void
+     */
 	public function createPdf() {
-		new \App\Lib\Fpdf\PDF($this, true);
+		\App\Facades\PDF::save($this);
 	}
 	
 	/**

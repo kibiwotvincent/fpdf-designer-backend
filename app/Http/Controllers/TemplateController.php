@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Template;
-use App\Lib\Fpdf\PDF;
 use App\Http\Resources\TemplateResource;
 use App\Http\Requests\RenameTemplateRequest;
 use App\Events\DocumentDeleted;
@@ -57,7 +56,7 @@ class TemplateController extends Controller
      */
 	public function viewPdf(Request $request) {
 		$template = Template::where('uuid', $request->uuid)->first();
-		new PDF($template);
+		$template->previewPdf();
 	}
 	
 	/**

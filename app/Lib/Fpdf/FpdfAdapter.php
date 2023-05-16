@@ -66,7 +66,7 @@ class FpdfAdapter extends FPDF
 				$textAlign = ucwords($draggable['text_align'][0]);
 				
 				$border = '';
-				$this->SetLineWidth($draggable['border_weight'] * $scaleFactor);
+				$this->SetLineWidth($draggable['border_weight']);
 				foreach(['left','top','right','bottom'] as $key) {
 					if($draggable['border_'.$key] != 'yes') continue;
 					
@@ -91,6 +91,20 @@ class FpdfAdapter extends FPDF
 				$this->SetXY($left, $top);
 				
 				$this->Image('logo.png', null, null, $width, $height,);
+			}
+			elseif($draggable['type'] == 'rectangle') {
+				$this->SetLineWidth($draggable['border_weight']);
+				$borderColor = $this->hexToRgb($draggable['border_color']);
+				$this->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
+				
+				$style = 'D';
+				if($draggable['background'] != 'none') {
+					$backgroundColor = $this->hexToRgb($draggable['background_color']);
+					$this->SetFillColor($backgroundColor[0], $backgroundColor[1], $backgroundColor[2]);
+					$style .= 'F';
+				}
+				
+				$this->Rect($left, $top, $width, $height, $style);
 			}
 		endforeach;
 	}

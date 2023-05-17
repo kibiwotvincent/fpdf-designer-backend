@@ -106,6 +106,18 @@ class FpdfAdapter extends FPDF
 				
 				$this->Rect($left, $top, $width, $height, $style);
 			}
+			elseif($draggable['type'] == 'line') {
+				$this->SetLineWidth($draggable['line_weight']);
+				$borderColor = $this->hexToRgb($draggable['line_color']);
+				$this->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
+				
+				$x1 = $left;
+				$y1 = $top;
+				$x2 = $left + $width;
+				$y2 = $top;
+				
+				$this->Line($x1, $y1, $x2, $y2);
+			}
 		endforeach;
 	}
 	

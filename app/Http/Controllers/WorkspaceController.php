@@ -47,6 +47,7 @@ class WorkspaceController extends Controller
 		$defaults['text'] = json_decode($settings['text_defaults']);
 		$defaults['page'] = json_decode($settings['page_defaults']);
 		$defaults['rectangle'] = json_decode($settings['rectangle_defaults']);
+		$defaults['line'] = json_decode($settings['line_defaults']);
 		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	
@@ -99,6 +100,7 @@ class WorkspaceController extends Controller
 		$defaults['text'] = json_decode($settings['text_defaults']);
 		$defaults['page'] = json_decode($settings['page_defaults']);
 		$defaults['rectangle'] = json_decode($settings['rectangle_defaults']);
+		$defaults['line'] = json_decode($settings['line_defaults']);
 		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	

@@ -18,7 +18,8 @@ class SettingController extends Controller
     {
         $settings['page_defaults'] = '{"size":"A4","orientation":"P","width":210,"height":297,"workspace_width":190,"workspace_height":277,"font_size":11,"font_color":"#000000","font_family":"Arial","margins":"medium","top_margin":10,"right_margin":10,"bottom_margin":10,"left_margin":10,"scale_factor":3.7795}';
         $settings['text_defaults'] = '{"type":"text","text":"Text","left":0,"top":0,"height":50,"width":400,"text_align":"left","font_size":11,"font_weight":"normal","font_color":"#000000","font_style":"normal","font_family":"Arial","background":"none","background_color":"#ffffff","border_left":"none","border_top":"none","border_right":"none","border_bottom":"none","border_color":"#000000","border_weight":0.2}';
-        $settings['rectangle_defaults'] = '{"type":"rectangle","left":0,"top":0,"height":50,"width":400,"background":"none","background_color":"#ffffff","border_left":"yes","border_top":"yes","border_right":"yes","border_bottom":"yes","border_color":"#000000","border_weight":0.2}';
+        $settings['rectangle_defaults'] = '{"type":"rectangle","left":0,"top":0,"height":50,"width":400,"background":"none","background_color":"#ffffff","border_color":"#000000","border_weight":0.2}';
+        $settings['line_defaults'] = '{"type":"line","left":0,"top":0,"height":25,"width":400,"line_color":"#000000","line_weight":0.2}';
 		$fonts = ['Arial','Calibri','Helvetica','Times'];
 		$pageSizes = [
 						'A4' => ['width' => 210,'height' => 297],

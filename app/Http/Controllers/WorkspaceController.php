@@ -12,7 +12,7 @@ use App\Events\DocumentSaved;
 use App\Events\UpdatingDocument;
 use App\Facades\PDF;
 use App\Http\Requests\SaveDocumentRequest;
-use Auth;
+use Log;
 
 class WorkspaceController extends Controller
 {
@@ -48,6 +48,7 @@ class WorkspaceController extends Controller
 		$defaults['page'] = json_decode($settings['page_defaults']);
 		$defaults['rectangle'] = json_decode($settings['rectangle_defaults']);
 		$defaults['line'] = json_decode($settings['line_defaults']);
+		$defaults['image'] = json_decode($settings['image_defaults']);
 		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	
@@ -101,6 +102,7 @@ class WorkspaceController extends Controller
 		$defaults['page'] = json_decode($settings['page_defaults']);
 		$defaults['rectangle'] = json_decode($settings['rectangle_defaults']);
 		$defaults['line'] = json_decode($settings['line_defaults']);
+		$defaults['image'] = json_decode($settings['image_defaults']);
 		return response()->json(['id' => $workspace->uuid, 'setup' => $setup, 'defaults' => $defaults], 200);
     }
 	
@@ -270,5 +272,20 @@ class WorkspaceController extends Controller
 		}
 		
 		PDF::preview($workspace);
+	}
+	
+	/**
+     * Handle upload image request.
+     * This are images used inside documents
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     *
+     */
+	public function uploadImage(Request $request) {
+		$path = $request->file('image')->store('public/uploads');
+		$imageName = explode('/', $path)[2];
+		$imageUrl = url('storage/uploads/'.$imageName);
+		return response()->json(['url' => $imageUrl], 200);
 	}
 }

@@ -45,6 +45,7 @@ Route::get('/workspace/init/{source}/{uuid}/{saveAs?}', [WorkspaceController::cl
 Route::get('/workspace/{uuid}', [WorkspaceController::class, 'load']);
 Route::post('/workspace/{uuid}/reset', [WorkspaceController::class, 'reset']);
 Route::get('/workspace/{uuid}/preview', [WorkspaceController::class, 'preview']);
+Route::post('/workspace/{uuid}/upload-image', [WorkspaceController::class, 'uploadImage']);
 
 Route::get('/templates', [TemplateController::class, 'index']);
 Route::get('/templates/{uuid}', [TemplateController::class, 'load']);

@@ -3,6 +3,7 @@ namespace App\Lib\Fpdf;
 
 use App\Lib\Fpdf\FPDF;
 use App\Models\Interfaces\DocumentInterface;
+use Log;
 
 class FpdfAdapter extends FPDF
 {
@@ -14,6 +15,8 @@ class FpdfAdapter extends FPDF
 		
 		//add fonts
 		$this->addFonts();
+		//set page auto break to match the document's bottom margin
+		$this->SetAutoPageBreak(true, $this->document->page_settings['bottom_margin']);
 		//add page
 		$this->AddPage();	
 		//insert data
@@ -89,8 +92,14 @@ class FpdfAdapter extends FPDF
 			}
 			elseif($draggable['type'] == 'image') {
 				$this->SetXY($left, $top);
-				
-				$this->Image('logo.png', null, null, $width, $height,);
+				if(isset($draggable['is_local']) && $draggable['is_local'] == "yes") {
+					$imageArray = explode('/', $draggable['url']);
+					$imageName = $imageArray[count($imageArray) - 1];
+					$this->Image(base_path('storage/app/public/uploads/'.$imageName), $left, $top, $width, $height);
+				}
+				else {
+					$this->Image($draggable['url'], $left, $top, $width, $height);
+				}
 			}
 			elseif($draggable['type'] == 'rectangle') {
 				$this->SetLineWidth($draggable['border_weight']);

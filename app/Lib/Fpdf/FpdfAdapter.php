@@ -122,9 +122,15 @@ class FpdfAdapter extends FPDF
 				
 				$x1 = $left;
 				$y1 = $top;
-				$x2 = $left + $width;
-				$y2 = $top;
 				
+				if(isset($draggable['line_type']) && $draggable['line_type'] == "vertical") {
+					$x2 = $left;
+					$y2 = $top + $width;
+				}
+				else {
+					$x2 = $left + $width;
+					$y2 = $top;
+				}
 				$this->Line($x1, $y1, $x2, $y2);
 			}
 		endforeach;

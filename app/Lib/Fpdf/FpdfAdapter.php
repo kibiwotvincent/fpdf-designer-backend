@@ -62,11 +62,15 @@ class FpdfAdapter extends FPDF
 				
 			if($draggable['type'] == 'text') {
 				$fontSize = $draggable['font_size'];
-				$fontWeight = $draggable['font_weight'] == 'bold' ? 'b' : '';
 				$fontColor = $this->hexToRgb($draggable['font_color']);
 				$fillBackground = ($draggable['background'] != 'none');
 				$borderColor = $this->hexToRgb($draggable['border_color']);
 				$textAlign = ucwords($draggable['text_align'][0]);
+				
+				$fontStyle = '';
+				foreach($draggable['font_style'] as $style) {
+					$fontStyle .= ucfirst($style[0]);
+				}
 				
 				$border = '';
 				$this->SetLineWidth($draggable['border_weight']);
@@ -84,7 +88,7 @@ class FpdfAdapter extends FPDF
 				$this->SetXY($left, $top);
 				$this->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2]);
 				$this->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
-				$this->SetFont($draggable['font_family'], $fontWeight, $fontSize);
+				$this->SetFont($draggable['font_family'], $fontStyle, $fontSize);
 				$text = iconv("UTF-8", "CP1252//TRANSLIT", $draggable['text']);
 				
 				//$this->Cell($width, $height, $draggable['text'], $border, 0, $textAlign, $fillBackground);

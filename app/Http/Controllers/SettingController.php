@@ -21,6 +21,26 @@ class SettingController extends Controller
         $settings['rectangle_defaults'] = '{"type":"rectangle","left":0,"top":0,"height":50,"width":400,"background":"none","background_color":"#ffffff","border_color":"#000000","border_weight":0.2}';
         $settings['line_defaults'] = '{"type":"line","left":0,"top":0,"height":25,"width":400,"line_color":"#000000","line_weight":0.2,"line_type":"horizontal"}';
         $settings['image_defaults'] = '{"type":"image","left":0,"top":0,"height":300,"width":400,"url":"","is_local":"no"}';
+        
+		$defaultColumnValues = ["value" => "","width" => 100,"is_width_auto" => "yes","height" => 15,"is_height_auto" => "yes"];
+		$defaultRowValues = ["value" => "","height" => 15,"is_height_auto" => "yes"];
+		
+		$tableDefaults = json_decode('{"type":"table","left":0,"top":0,"height":300,"width":600,"columns":3,"rows":2,"border_weight":0.2,"border_color":"#000000","border_left":"none","border_top":"none","border_right":"none","border_bottom":"none"}', true);
+		$tableDefaults['column_settings'] = ["text_align" => "left","font_size" => 11,"font_color" => "#000000","font_style" => [],"font_family" => "Arial",
+		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none",
+		"background" => "none","background_color" => "#ffffff","columns" => [],"default_column_values" => $defaultColumnValues];
+		$tableDefaults['row_settings'] = ["text_align" => "left","font_size" => 11,"font_color" => "#000000","font_style" => [],"font_family" => "Arial",
+		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none",
+		"background" => "none","background_color" => "#ffffff","loop_statement" => "","rows" => [],"default_row_values" => $defaultRowValues];
+		
+		//populate columns in column settings
+		for($i = 0; $i < $tableDefaults['columns']; $i++){
+			array_push($tableDefaults['column_settings']['columns'], $defaultColumnValues);
+			array_push($tableDefaults['row_settings']['rows'], $defaultRowValues);
+		}
+		
+		$settings['table_defaults'] = json_encode($tableDefaults);
+		
 		$fonts = ['Arial','Calibri','Helvetica','Times'];
 		$pageSizes = [
 						'A4' => ['width' => 210,'height' => 297],

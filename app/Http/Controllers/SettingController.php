@@ -22,23 +22,25 @@ class SettingController extends Controller
         $settings['line_defaults'] = '{"type":"line","left":0,"top":0,"height":25,"width":400,"line_color":"#000000","line_weight":0.2,"line_type":"horizontal"}';
         $settings['image_defaults'] = '{"type":"image","left":0,"top":0,"height":300,"width":400,"url":"","is_local":"no"}';
         
-		$defaultColumnValues = ["value" => "","width" => 100,"is_width_auto" => "yes","height" => 15,"is_height_auto" => "yes"];
-		$defaultRowValues = ["value" => "","height" => 15,"is_height_auto" => "yes"];
+		$defaultCellValues = ["value" => "","width" => 100,"is_width_auto" => "yes","height" => 15,"is_height_auto" => "yes"];
 		
-		$tableDefaults = json_decode('{"type":"table","left":0,"top":0,"height":300,"width":600,"columns":3,"rows":2,"border_weight":0.2,"border_color":"#000000","border_left":"none","border_top":"none","border_right":"none","border_bottom":"none"}', true);
+		$tableDefaults = json_decode('{"type":"table","left":0,"top":0,"height":300,"width":600,"columns":3,"rows":4,"border_weight":0.2,"border_color":"#000000","border_left":"none","border_top":"none","border_right":"none","border_bottom":"none"}', true);
 		$tableDefaults['column_settings'] = ["text_align" => "left","font_size" => 11,"font_color" => "#000000","font_style" => [],"font_family" => "Arial",
-		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none",
-		"background" => "none","background_color" => "#ffffff","columns" => [],"default_column_values" => $defaultColumnValues];
+		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none","border_columns" => "none",
+		"background" => "none","background_color" => "#ffffff"];
 		$tableDefaults['row_settings'] = ["text_align" => "left","font_size" => 11,"font_color" => "#000000","font_style" => [],"font_family" => "Arial",
-		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none",
-		"background" => "none","background_color" => "#ffffff","loop_statement" => "","rows" => [],"default_row_values" => $defaultRowValues];
+		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none","border_columns" => "none","border_rows" => "none",
+		"background" => "none","background_color" => "#ffffff","loop_statement" => ""];
 		
 		//populate columns in column settings
-		for($i = 0; $i < $tableDefaults['columns']; $i++){
-			array_push($tableDefaults['column_settings']['columns'], $defaultColumnValues);
-			array_push($tableDefaults['row_settings']['rows'], $defaultRowValues);
+		$cells = [];
+		for($i = 0; $i < $tableDefaults['rows']; $i++) {
+			for($j = 0; $j < $tableDefaults['columns']; $j++) {
+				$cells[$i][$j] = $defaultCellValues;
+			}
 		}
-		
+		$tableDefaults['default_cell_values'] = $defaultCellValues;
+		$tableDefaults['cells'] = $cells;
 		$settings['table_defaults'] = json_encode($tableDefaults);
 		
 		$fonts = ['Arial','Calibri','Helvetica','Times'];

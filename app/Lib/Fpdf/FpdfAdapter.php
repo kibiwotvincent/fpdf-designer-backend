@@ -137,6 +137,50 @@ class FpdfAdapter extends FPDF
 				}
 				$this->Line($x1, $y1, $x2, $y2);
 			}
+			elseif($draggable['type'] == 'table') {
+				$columnSettings = $draggable['column_settings'];
+				$rowSettings = $draggable['row_settings'];
+				
+				foreach($draggable['cells'] as $rowIndex => $row) {
+					$rowHeight = $this->getCellHeight($draggable, $rowIndex) * $scaleFactor;
+					Log::info($rowHeight);
+					$this->SetY($top);
+					$top += $rowHeight;
+					$originX = $left;
+					foreach($row as $columnIndex => $cell) {
+						$settings = $rowIndex == 0 ? $columnSettings : $rowSettings;
+						$fontSize = $settings['font_size'];
+						$fontColor = $this->hexToRgb($settings['font_color']);
+						$fillBackground = ($settings['background'] != 'none');
+						$borderColor = $this->hexToRgb($settings['border_color']);
+						$textAlign = ucwords($settings['text_align'][0]);
+						
+						$fontStyle = '';
+						foreach($settings['font_style'] as $style) {
+							$fontStyle .= ucfirst($style[0]);
+						}
+						
+						$border = $this->getCellBorderStyle($rowIndex, $columnIndex, $draggable);
+						$this->SetLineWidth($settings['border_weight']);
+						
+						if($fillBackground) {
+							$backgroundColor = $this->hexToRgb($settings['background_color']);
+							$this->SetFillColor($backgroundColor[0], $backgroundColor[1], $backgroundColor[2]);
+						}
+						
+						$cellWidth = $this->getCellWidth($draggable, $columnIndex) * $scaleFactor;
+						
+						$this->SetX($originX);
+						$originX += $cellWidth;
+						$this->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2]);
+						$this->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
+						$this->SetFont($settings['font_family'], $fontStyle, $fontSize);
+						$text = iconv("UTF-8", "CP1252//TRANSLIT", $cell['value']);
+						
+						$this->Cell($cellWidth, $rowHeight, $text, $border, 0, $textAlign, $fillBackground);
+					}
+				}
+			}
 		endforeach;
 	}
 	
@@ -147,6 +191,167 @@ class FpdfAdapter extends FPDF
 			$rgbColorArray[$i] = hexdec($hexColorArray[$i]);
 		}
 		return $rgbColorArray;
+	}
+	
+	private function getCellWidth($table, $cellColumnIndex) {
+		$row = $table['cells'][0];
+		$columnsWithAutoWidth = [];
+		$widths = [];
+		foreach($row as $columnIndex => $cell) {
+			if($cell['is_width_auto'] == 'yes') {
+				array_push($columnsWithAutoWidth, $columnIndex);
+			}
+			else {
+				$widths[$columnIndex] = $cell['width'];
+			}
+		}
+		
+		if(! empty($columnsWithAutoWidth)) {
+			//calculate widths of the auto columns
+			$remainingWidthToShare = $table['width'] - array_sum($widths);
+			$cellWidth = $remainingWidthToShare / count($columnsWithAutoWidth);
+			foreach($columnsWithAutoWidth as $columnIndex) {
+				//assign calculated width to the cells whose width was set to auto
+				$widths[$columnIndex] = $cellWidth;
+			}
+		}
+		
+		return $widths[$cellColumnIndex];
+	}
+	private function getCellHeight($table, $cellRowIndex) {
+		$rowsWithAutoHeight = [];
+		$heights = [];
+		foreach($table['cells'] as $rowIndex => $row) {
+			$cell = $row[0]; //get the first column only
+			if($cell['is_height_auto'] == 'yes') {
+				array_push($rowsWithAutoHeight, $rowIndex);
+			}
+			else {
+				$heights[$rowIndex] = $cell['height'];
+			}
+		}
+		
+		if(! empty($rowsWithAutoHeight)) {
+			//calculate height of the auto columns
+			$remainingHeightToShare = $table['height'] - array_sum($heights);
+			$cellHeight = $remainingHeightToShare / count($rowsWithAutoHeight);
+			foreach($rowsWithAutoHeight as $rowIndex) {
+				//assign calculated height to the cells whose height was set to auto
+				$heights[$rowIndex] = $cellHeight;
+			}
+		}
+		return $heights[$cellRowIndex];
+	}
+	private function getCellBorderStyle($rowIndex, $columnIndex, $table) {
+		if($rowIndex == 0) {
+			return $this->getColumnBorderStyle($rowIndex, $columnIndex, $table);
+		}
+		else {
+			return $this->getRowBorderStyle($rowIndex, $columnIndex, $table);
+		}
+	}
+	
+	private function getColumnBorderStyle($rowIndex, $columnIndex, $table) {
+		$style = '';
+		$draggable  = $table['column_settings'];
+		
+		$includeVerticalBorders = $draggable['border_columns'] == "yes";
+		
+		if($includeVerticalBorders) {
+			if($draggable['border_left'] == "yes" && $rowIndex == 0) {
+				$style .= 'L';
+			}
+			else {
+				if($rowIndex == 0 && $columnIndex != 0) {
+					$style .= 'L';
+				}
+			}
+			if($draggable['border_right'] == "yes" && $rowIndex == 0) {
+				$style .= 'R';
+			}
+			else {
+				if($rowIndex == 0 && $columnIndex != $table['columns'] - 1) {
+					$style .= 'R';
+				}
+			}
+		}
+		else {
+			if($draggable['border_left'] == "yes" && $rowIndex == 0 && $columnIndex == 0) {
+				$style .= 'L';
+			}
+			if($draggable['border_right'] == "yes" && $rowIndex == 0 && $columnIndex == $table['columns'] - 1) {
+				$style .= 'R';
+			}
+		}
+		
+		if($draggable['border_top'] == "yes" && $rowIndex == 0) {
+			$style .= 'T';
+		}
+		if($draggable['border_bottom'] == "yes" && $rowIndex == 0) {
+			$style .= 'B';
+		}
+		
+		return $style;
+	}
+	
+	private function getRowBorderStyle($rowIndex, $columnIndex, $table) {
+		$style = '';
+		$draggable  = $table['row_settings'];
+		
+		$includeVerticalBorders = $draggable['border_columns'] == "yes";
+		$includeHorizontalBorders = $draggable['border_rows'] == "yes";
+		
+		if($includeVerticalBorders) {
+			if($draggable['border_left'] == "yes" && $rowIndex > 0) {
+				$style .= 'L';
+			}
+			else {
+				if($rowIndex > 0 && $columnIndex != 0) {
+					$style .= 'L';
+				}
+			}
+			if($draggable['border_right'] == "yes" && $rowIndex > 0) {
+				$style .= 'R';
+			}
+			else {
+				if($rowIndex > 0 && $columnIndex != $table['columns'] - 1) {
+					$style .= 'R';
+				}
+			}
+		}
+		else {
+			if($draggable['border_left'] == "yes" && $rowIndex > 0 && $columnIndex == 0) {
+				$style .= 'L';
+			}
+			if($draggable['border_right'] == "yes" && $rowIndex > 0 && $columnIndex == $table['columns'] - 1) {
+				$style .= 'R';
+			}
+		}
+		
+		if($includeHorizontalBorders) {
+			if($draggable['border_top'] == "yes" && $rowIndex >= 1) {
+				$style .= 'T';
+			}
+			else {
+				if($rowIndex > 1) {
+					$style .= 'T';
+				}
+			}
+			
+			if($draggable['border_bottom'] == "yes" && $rowIndex == $table['rows'] - 1) {
+				$style .= 'B';
+			}
+		}
+		else {
+			if($draggable['border_top'] == "yes" && $rowIndex == 1) {
+				$style .= 'T';
+			}
+			if($draggable['border_bottom'] == "yes" && $rowIndex == $table['rows'] - 1) {
+				$style .= 'B';
+			}
+		}
+		
+		return $style;
 	}
 }
 ?>

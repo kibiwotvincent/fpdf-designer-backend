@@ -30,7 +30,7 @@ class SettingController extends Controller
 		"background" => "none","background_color" => "#ffffff"];
 		$tableDefaults['row_settings'] = ["text_align" => "left","font_size" => 11,"font_color" => "#000000","font_style" => [],"font_family" => "Arial",
 		"border_weight" => 0.2,"border_color" => "#000000","border_left" => "none","border_top" => "none","border_right" => "none","border_bottom" => "none","border_columns" => "none","border_rows" => "none",
-		"background" => "none","background_color" => "#ffffff","loop_statement" => ""];
+		"background" => "none","background_color" => "#ffffff","loop_first_row" => "no","loop_statement" => ""];
 		
 		//populate columns in column settings
 		$cells = [];

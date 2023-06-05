@@ -143,21 +143,28 @@ class FpdfAdapter extends FPDF
 				
 				foreach($draggable['cells'] as $rowIndex => $row) {
 					$rowHeight = $this->getCellHeight($draggable, $rowIndex) * $scaleFactor;
-					Log::info($rowHeight);
 					$this->SetY($top);
 					$top += $rowHeight;
 					$originX = $left;
 					foreach($row as $columnIndex => $cell) {
 						$settings = $rowIndex == 0 ? $columnSettings : $rowSettings;
-						$fontSize = $settings['font_size'];
-						$fontColor = $this->hexToRgb($settings['font_color']);
+						
+						$textAlign = isset($cell['text_align']) ? ucwords($cell['text_align'][0]) : ucwords($settings['text_align'][0]);
+						$fontSize = $cell['font_size'] ?? $settings['font_size'];
+						$fontColor = $this->hexToRgb($cell['font_color'] ?? $settings['font_color']);
+						
 						$fillBackground = ($settings['background'] != 'none');
 						$borderColor = $this->hexToRgb($settings['border_color']);
-						$textAlign = ucwords($settings['text_align'][0]);
 						
 						$fontStyle = '';
-						foreach($settings['font_style'] as $style) {
-							$fontStyle .= ucfirst($style[0]);
+						$fontStyles = isset($cell['font_style']) ? array_merge($cell['font_style'], $settings['font_style']) : $settings['font_style'];
+						$uniqueFontStylesArray = [];
+						foreach($fontStyles as $style) {
+							//check if font style has been added already
+							if(!in_array($style, $uniqueFontStylesArray)) {
+								array_push($uniqueFontStylesArray, $style);
+								$fontStyle .= ucfirst($style[0]);
+							}
 						}
 						
 						$border = $this->getCellBorderStyle($rowIndex, $columnIndex, $draggable);

@@ -8,6 +8,8 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +41,7 @@ Route::get('/page/setup', function (Request $request) {
     return response()->json(['page_sizes' => $pageSizes, 'page_margins' => $pageMargins, 'fonts' => $fonts]);
 });
 
+//Route::get('/admin/roles', [RoleController::class, 'index']);
 Route::get('/settings/init', [SettingController::class, 'init']);
 Route::get('/workspace/init/blank/{saveAs?}', [WorkspaceController::class, 'initBlank']);
 Route::get('/workspace/init/{source}/{uuid}/{saveAs?}', [WorkspaceController::class, 'initFromSource']);
@@ -60,9 +63,14 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/workspace/{uuid}/save', [WorkspaceController::class, 'save']);
 	
 	//admin routes
+	//templates
 	Route::get('/admin/templates', [TemplateController::class, 'index']);
 	Route::post('/admin/templates/{uuid}/rename', [TemplateController::class, 'renameTemplate']);
 	Route::get('/admin/templates/{uuid}/view-pdf', [TemplateController::class, 'viewPdf']);
 	Route::post('/admin/templates/{uuid}/delete', [TemplateController::class, 'delete']);
-	
+	//roles
+	Route::get('/admin/permissions', [PermissionController::class, 'index']);
+	Route::get('/admin/roles', [RoleController::class, 'index']);
+	Route::post('/admin/roles/create', [RoleController::class, 'store']);
+	Route::post('/admin/roles/{id}/update', [RoleController::class, 'update']);
 });

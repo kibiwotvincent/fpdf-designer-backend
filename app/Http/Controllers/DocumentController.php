@@ -60,8 +60,10 @@ class DocumentController extends Controller
      */
     public function delete(Request $request)
     {	
-		Document::where('uuid', $request->uuid)->delete();
-		$document = Document::withTrashed()->where('uuid', $request->uuid)->first();
+		$document = Document::where('uuid', $request->uuid)->first();
+		$this->authorize('delete', $document);
+		
+		$document->delete();
 		DocumentDeleted::dispatch($document);
 		return response()->json(['message' => "Document has been deleted successfully."], 200);
 	}

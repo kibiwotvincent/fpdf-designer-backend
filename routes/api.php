@@ -73,4 +73,6 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/admin/roles', [RoleController::class, 'index']);
 	Route::post('/admin/roles/create', [RoleController::class, 'store']);
 	Route::post('/admin/roles/{id}/update', [RoleController::class, 'update']);
+	Route::post('/admin/roles/{id}/rename', [RoleController::class, 'rename']);
+	Route::post('/admin/roles/{id}/delete', [RoleController::class, 'delete']);
 });

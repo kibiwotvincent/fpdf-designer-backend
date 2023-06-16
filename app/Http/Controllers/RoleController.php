@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\CreateRequest;
 use App\Http\Requests\Role\UpdateRequest;
+use App\Http\Requests\Role\RenameRequest;
 use App\Http\Requests\Role\DeleteRequest;
 use Illuminate\Support\Facades\Response;
 use Spatie\Permission\Models\Permission;
@@ -44,7 +45,7 @@ class RoleController extends Controller
     }
 	
 	/**
-     * Handle an incoming update role request.
+     * Handle an incoming update role permissions request.
      *
      * @param  \App\Http\Requests\Role\UpdateRequest  $request
      * @return \Illuminate\Http\JsonResponse
@@ -62,14 +63,33 @@ class RoleController extends Controller
     }
 	
 	/**
-     * Handle an incoming delete role request.
+     * Handle an incoming rename role request.
      *
-     * @param  \App\Http\Requests\Role\DeleteRequest  $request
+     * @param  \App\Http\Requests\Role\RenameRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(DeleteRequest $request)
+    public function rename(RenameRequest $request)
     {
-		Role::find($request->role_id)->delete;
+		$role = Role::find($request->id);
+		$role->name = $request->name;
+		$role->save();
+		
+		// Reset cached roles and permissions
+		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+		
+		$role = (new RoleResource($role))->toArray($request);
+		return Response::json(['role' => $role, 'message' => "Role updated successfully."], 200);
+    }
+	
+	/**
+     * Handle an incoming delete role request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete(Request $request)
+    {
+		Role::find($request->id)->delete();
 		
 		// Reset cached roles and permissions
 		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

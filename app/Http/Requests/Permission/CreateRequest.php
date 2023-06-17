@@ -41,7 +41,7 @@ class CreateRequest extends FormRequest
 		$name = $validator->getData()['name'];
 		
         $validator->after(function ($validator) use ($name) {
-				$permissions = Permission::where(['name' => $name, 'guard_name' => 'sanctum'])->get();
+				$permissions = Permission::where(['name' => $name, 'guard_name' => 'web'])->get();
 				
 				if($permissions->isNotEmpty()) {
 					$validator->errors()->add(

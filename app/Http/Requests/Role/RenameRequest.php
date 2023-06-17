@@ -42,7 +42,7 @@ class RenameRequest extends FormRequest
 		$roleID = $this->id;
 		
         $validator->after(function ($validator) use ($roleID, $name) {
-				$roles = Role::where(['name' => $name, 'guard_name' => 'sanctum'])->get()->except([$roleID]);
+				$roles = Role::where(['name' => $name, 'guard_name' => 'web'])->get()->except([$roleID]);
 				
 				if($roles->isNotEmpty()) {
 					$validator->errors()->add(

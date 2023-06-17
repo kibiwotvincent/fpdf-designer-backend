@@ -42,7 +42,7 @@ class UpdateRequest extends FormRequest
 		$permissionID = $this->id;
 		
         $validator->after(function ($validator) use ($permissionID, $name) {
-				$permissions = Permission::where(['name' => $name, 'guard_name' => 'sanctum'])->get()->except([$permissionID]);
+				$permissions = Permission::where(['name' => $name, 'guard_name' => 'web'])->get()->except([$permissionID]);
 				
 				if($permissions->isNotEmpty()) {
 					$validator->errors()->add(

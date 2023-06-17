@@ -31,7 +31,7 @@ class PermissionController extends Controller
      */
     public function store(CreateRequest $request)
     {
-		$permission = Permission::create(['name' => $request->name]);
+		$permission = Permission::create(['name' => $request->name, 'guard_name' => 'web']);
 		
 		// Reset cached permissions and permissions
 		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

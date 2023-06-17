@@ -34,7 +34,7 @@ class RoleController extends Controller
      */
     public function store(CreateRequest $request)
     {
-		$role = Role::create(['name' => $request->name]);
+		$role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
 		
 		// Reset cached roles and permissions
 		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

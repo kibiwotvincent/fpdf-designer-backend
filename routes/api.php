@@ -68,11 +68,14 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/admin/templates/{uuid}/rename', [TemplateController::class, 'renameTemplate']);
 	Route::get('/admin/templates/{uuid}/view-pdf', [TemplateController::class, 'viewPdf']);
 	Route::post('/admin/templates/{uuid}/delete', [TemplateController::class, 'delete']);
-	//roles
-	Route::get('/admin/permissions', [PermissionController::class, 'index']);
+	//roles & permissions
 	Route::get('/admin/roles', [RoleController::class, 'index']);
 	Route::post('/admin/roles/create', [RoleController::class, 'store']);
 	Route::post('/admin/roles/{id}/update', [RoleController::class, 'update']);
 	Route::post('/admin/roles/{id}/rename', [RoleController::class, 'rename']);
 	Route::post('/admin/roles/{id}/delete', [RoleController::class, 'delete']);
+	Route::get('/admin/permissions', [PermissionController::class, 'index']);
+	Route::post('/admin/permissions/create', [PermissionController::class, 'store']);
+	Route::post('/admin/permissions/{id}/update', [PermissionController::class, 'update']);
+	Route::post('/admin/permissions/{id}/delete', [PermissionController::class, 'delete']);
 });

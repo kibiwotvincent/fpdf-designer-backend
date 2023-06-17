@@ -26,7 +26,7 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
+            'name' => 'required|max:100',
         ];
     }
 	
@@ -39,10 +39,9 @@ class CreateRequest extends FormRequest
     public function withValidator(Validator $validator)
     {
 		$name = $validator->getData()['name'];
-		$roleID = $this->id;
 		
-        $validator->after(function ($validator) use ($roleID, $name) {
-				$roles = Role::where(['name' => $name, 'guard_name' => 'sanctum'])->get()->except([$roleID]);
+        $validator->after(function ($validator) use ($name) {
+				$roles = Role::where(['name' => $name, 'guard_name' => 'sanctum'])->get();
 				
 				if($roles->isNotEmpty()) {
 					$validator->errors()->add(

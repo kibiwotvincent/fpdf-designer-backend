@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Role;
+namespace App\Http\Requests\Permission;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
+use Spatie\Permission\Models\Permission;
 
 class UpdateRequest extends FormRequest
 {
@@ -24,8 +26,29 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-			'permission_id' => 'required|numeric',
-            'name' => 'required|array',
+            'name' => 'required|max:100',
         ];
+    }
+	
+	/**
+     * Check if permission name is already taken.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator(Validator $validator)
+    {
+		$name = $validator->getData()['name'];
+		$permissionID = $this->id;
+		
+        $validator->after(function ($validator) use ($permissionID, $name) {
+				$permissions = Permission::where(['name' => $name, 'guard_name' => 'sanctum'])->get()->except([$permissionID]);
+				
+				if($permissions->isNotEmpty()) {
+					$validator->errors()->add(
+						'name', "The name has already been taken."
+					);
+				}
+		});
     }
 }

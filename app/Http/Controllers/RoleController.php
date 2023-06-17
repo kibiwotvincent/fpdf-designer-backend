@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\CreateRequest;
 use App\Http\Requests\Role\UpdateRequest;
 use App\Http\Requests\Role\RenameRequest;
-use App\Http\Requests\Role\DeleteRequest;
 use Illuminate\Support\Facades\Response;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -41,7 +40,7 @@ class RoleController extends Controller
 		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 		
 		$role = (new RoleResource($role))->toArray($request);
-		return Response::json(['role' => $role, 'message' => "Role created successfully."], 200);
+		return Response::json(['role' => $role, 'message' => "Role added successfully."], 200);
     }
 	
 	/**

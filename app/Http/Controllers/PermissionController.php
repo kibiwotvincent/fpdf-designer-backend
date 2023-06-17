@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Permission\CreateRequest;
 use App\Http\Requests\Permission\UpdateRequest;
-use App\Http\Requests\Permission\DeleteRequest;
 use Illuminate\Support\Facades\Response;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
@@ -38,7 +37,7 @@ class PermissionController extends Controller
 		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 		
 		$permission = (new PermissionResource($permission))->toArray($request);
-		return Response::json(['permission' => $permission, 'message' => "Permission created successfully."], 200);
+		return Response::json(['permission' => $permission, 'message' => "Permission added successfully."], 200);
     }
 	
 	/**
@@ -63,12 +62,12 @@ class PermissionController extends Controller
 	/**
      * Handle an incoming delete permission request.
      *
-     * @param  \App\Http\Requests\Permission\DeleteRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(DeleteRequest $request)
+    public function delete(Request $request)
     {
-		Permission::find($request->permission_id)->delete;
+		Permission::find($request->id)->delete();
 		
 		// Reset cached permissions and permissions
 		app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

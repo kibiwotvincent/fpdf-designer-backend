@@ -21,6 +21,9 @@ class UserResource extends JsonResource
 				'id' => $this->id,
 				'name' => $this->name,
 				'email' => $this->email,
+				'roles' => $this->roles->map(function ($row) {
+											return $row->name;
+										})->all()
 				];
 				
 		if($this->authToken != null) {

@@ -10,6 +10,7 @@ use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,4 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/admin/permissions/create', [PermissionController::class, 'store']);
 	Route::post('/admin/permissions/{id}/update', [PermissionController::class, 'update']);
 	Route::post('/admin/permissions/{id}/delete', [PermissionController::class, 'delete']);
+	//users
+	Route::get('/admin/users', [UserController::class, 'index']);
+	Route::post('/admin/users/{id}/update/roles', [UserController::class, 'updateRoles']);
+	
 });

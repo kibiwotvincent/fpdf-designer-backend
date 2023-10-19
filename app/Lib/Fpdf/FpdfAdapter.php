@@ -1,11 +1,11 @@
 <?php 
 namespace App\Lib\Fpdf;
 
-use App\Lib\Fpdf\FPDF;
+use App\Lib\Fpdf\Fpdf;
 use App\Models\Interfaces\DocumentInterface;
 use Log;
 
-class FpdfAdapter extends FPDF
+class FpdfAdapter extends Fpdf
 {
 	protected $document = null;
 	

@@ -9,8 +9,8 @@ use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,12 +75,16 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/admin/roles/{id}/update', [RoleController::class, 'update']);
 	Route::post('/admin/roles/{id}/rename', [RoleController::class, 'rename']);
 	Route::post('/admin/roles/{id}/delete', [RoleController::class, 'delete']);
-	Route::get('/admin/permissions', [PermissionController::class, 'index']);
-	Route::post('/admin/permissions/create', [PermissionController::class, 'store']);
-	Route::post('/admin/permissions/{id}/update', [PermissionController::class, 'update']);
-	Route::post('/admin/permissions/{id}/delete', [PermissionController::class, 'delete']);
 	//users
 	Route::get('/admin/users', [UserController::class, 'index']);
 	Route::post('/admin/users/{id}/update/roles', [UserController::class, 'updateRoles']);
+    //subscriptions
+	Route::get('/admin/subscriptions', [SubscriptionController::class, 'index']);
+    Route::post('/admin/subscriptions', [SubscriptionController::class, 'store']);
+    Route::get('/admin/subscriptions/{uuid}', [SubscriptionController::class, 'view']);
+	Route::post('/admin/subscriptions/{uuid}', [SubscriptionController::class, 'update']);
+	Route::post('/admin/subscriptions/{uuid}/delete', [SubscriptionController::class, 'delete']);
+    Route::post('/admin/subscriptions/{uuid}/restore', [SubscriptionController::class, 'restore']);
+	Route::post('/admin/subscriptions/{uuid}/destroy', [SubscriptionController::class, 'destroy']);
 	
 });

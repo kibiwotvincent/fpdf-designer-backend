@@ -198,8 +198,8 @@ class WorkspaceController extends Controller
 		$thumbnail = md5(time().rand(111111, 999999)).".png";
 		
 		//save into templates table
-		$uuID = $workspace->save_as == "template" ? $workspace->template_id : $workspace->uuid;
-		$template = Template::where('uuid', $uuID)->first();
+		//$uuID = $workspace->save_as == "template" ? $workspace->template_id : $workspace->uuid;
+		$template = Template::where('uuid', $workspace->uuid)->first();
 		if(isset($template->id)) {
 			//fire an event that will delete existing template thumbnail
 			UpdatingDocument::dispatch($template);

@@ -19,6 +19,7 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Document::class);
         $documents = $request->user()->documents;
 		return DocumentResource::collection($documents);
     }

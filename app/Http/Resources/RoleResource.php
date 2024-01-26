@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Spatie\Permission\Models\Permission;
 
 class RoleResource extends JsonResource
 {
@@ -26,7 +27,10 @@ class RoleResource extends JsonResource
 				'name' => $this->name,
 				'permissions' => $this->permissions->map(function ($row) {
 											return $row->name;
-										})->all()
+										})->all(),
+                'all_permissions' => Permission::get()->map(function ($row) { 
+                                            return $row->name;
+                                        })->all()
 				];
     }
 	

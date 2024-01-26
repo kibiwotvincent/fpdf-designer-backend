@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Document;
 use App\Models\User;
+use App\Models\Subscription;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class DocumentPolicy
+class SubscriptionPolicy
 {
     use HandlesAuthorization;
 
@@ -18,19 +18,18 @@ class DocumentPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('view documents');
+        return $user->can('view subscriptions');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Document $document)
+    public function view(User $user, Subscription $subscription)
     {
-        //
+        return $user->can('view subscription');
     }
 
     /**
@@ -41,58 +40,50 @@ class DocumentPolicy
      */
     public function create(User $user)
     {
-        //
+       return $user->can('add subscription');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Document $document)
+    public function update(User $user, Subscription $subscription)
     {
-        //
+        return $user->can('update subscription');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Document $document)
+    public function delete(User $user, Subscription $subscription)
     {
-		if($user->can('delete document') && $document->user_id == $user->id) {
-			return true;
-		}
-		
-        return false;
+        return $user->can('delete subscription');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Document $document)
+    public function restore(User $user, Subscription $subscription)
     {
-        //
+        return $user->can('restore subscription');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Document  $document
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Document $document)
+    public function forceDelete(User $user, Subscription $subscription)
     {
-        //
+        return $user->can('permanently delete subscription');
     }
 }

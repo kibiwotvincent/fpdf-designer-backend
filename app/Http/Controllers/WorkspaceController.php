@@ -289,5 +289,6 @@ class WorkspaceController extends Controller
 		$imageName = explode('/', $path)[2];
 		$imageUrl = url('storage/uploads/'.$imageName);
 		return response()->json(['url' => $imageUrl], 200);
+        
 	}
 }

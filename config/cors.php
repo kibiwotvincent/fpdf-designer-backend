@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('API_URL', 'http://localhost:3000')],
+    'allowed_origins' => explode(',', env('API_URLS')),
 
     'allowed_origins_patterns' => [],
 

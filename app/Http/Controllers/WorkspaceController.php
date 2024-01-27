@@ -237,7 +237,7 @@ class WorkspaceController extends Controller
 		$workspaceID = $request->uuid;
         $workspace = Workspace::where('uuid', $workspaceID)->first();
 		if($workspace->source == 'templates') {
-			$template = Template::where('uuid', $workspaceID)->first();
+			$template = Template::where('uuid', $workspace->template_id)->first();
 			$pageSettings = $template->page_settings;
 			$draggables = $template->draggables;
 		}

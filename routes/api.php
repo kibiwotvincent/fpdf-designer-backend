@@ -11,6 +11,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubscriptionController;
+use App\Lib\LemonSqueezy\LemonSqueezy;
+use App\Lib\LemonSqueezy\Controllers\WebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,4 +89,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/subscriptions/{uuid}/restore', [SubscriptionController::class, 'restore']);
 	Route::post('/admin/subscriptions/{uuid}/destroy', [SubscriptionController::class, 'destroy']);
 	
+});
+#lemon squeezy
+Route::post('/lemonsqueezy/webhook', WebhookController::class);
+Route::get('/stores', function (Request $request) {
+    $stores = LemonSqueezy::stores();
+    print($stores);
+});
+
+Route::get('/customers/create', function (Request $request) {
+    $stores = LemonSqueezy::createCustomer();
+    print($stores);
+});
+
+Route::get('/subscriptions', function (Request $request) {
+    $stores = LemonSqueezy::subscriptions();
+    print($stores);
 });

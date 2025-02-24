@@ -20,7 +20,7 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Subscription::class);
+        //$this->authorize('viewAny', Subscription::class);
         
         if($request->all == true) {
             $subscriptions = Subscription::withTrashed()->orderBy('price', 'asc')->get();

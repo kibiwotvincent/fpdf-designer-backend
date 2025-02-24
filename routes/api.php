@@ -53,13 +53,19 @@ Route::post('/workspace/{uuid}/reset', [WorkspaceController::class, 'reset']);
 Route::get('/workspace/{uuid}/preview', [WorkspaceController::class, 'preview']);
 Route::post('/workspace/{uuid}/upload-image', [WorkspaceController::class, 'uploadImage']);
 
+Route::get('/pricing', [SubscriptionController::class, 'index']);
 Route::get('/templates', [TemplateController::class, 'index']);
 Route::get('/templates/{uuid}', [TemplateController::class, 'load']);
 Route::post('/users/register', [RegisteredUserController::class, 'store']);
 Route::post('/users/login', [AuthenticatedSessionController::class, 'store']);
 
+//generate pdf
+Route::post('/create-pdf/{id}', [DocumentController::class, 'createPdf']);
+	
 Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/documents', [DocumentController::class, 'index']);
+	Route::get('/api-key', [UserController::class, 'apiKey']);
+	Route::post('/api-key', [UserController::class, 'refreshApiKey']);
 	Route::post('/documents/{uuid}/rename', [DocumentController::class, 'renameDocument']);
 	Route::get('/documents/{uuid}/view-pdf', [DocumentController::class, 'viewPdf']);
 	Route::post('/documents/{uuid}/delete', [DocumentController::class, 'delete']);
@@ -103,6 +109,6 @@ Route::get('/customers/create', function (Request $request) {
 });
 
 Route::get('/subscriptions', function (Request $request) {
-    $stores = LemonSqueezy::subscriptions();
+    $stores = LemonSqueezy::variants();
     print($stores);
 });

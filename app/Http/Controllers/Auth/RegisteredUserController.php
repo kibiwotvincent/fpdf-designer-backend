@@ -33,10 +33,14 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $user->generateApiKey();
+
         event(new Registered($user));
 
 	   //create access token
 	   $user->createToken($request->ip())->plainTextToken;
+
+       $user->assignRole('user');
 
         return (new UserResource($user))->response()->setStatusCode(200);
     }

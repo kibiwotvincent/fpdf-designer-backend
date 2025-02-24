@@ -11,7 +11,7 @@ use App\Http\Requests\User\UpdateRolesRequest;
 
 class UserController extends Controller
 {
-	/**
+	  /**
      * Fetch users.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -21,6 +21,32 @@ class UserController extends Controller
     {
         $users = User::orderBy('name', 'asc')->get();
 		return UserResource::collection($users);
+    }
+
+    /**
+     * Fetch user api key.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiKey(Request $request)
+    {
+        $user = User::find($request->user()->id);
+		return Response::json(['api_key' => $user->api_key, 'message' => "Api key fetched successfully."], 200);
+    }
+	
+    /**
+     * Regenerate user api key.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refreshApiKey(Request $request)
+    {
+        $user = User::find($request->user()->id);
+        $user->generateApiKey();
+        $user->refresh();
+		return Response::json(['api_key' => $user->api_key, 'message' => "New API key has been generated successfully."], 200);
     }
 	
 	/**

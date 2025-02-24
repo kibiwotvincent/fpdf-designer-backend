@@ -44,8 +44,9 @@ class LemonSqueezy
         $customer = [
                         'type' => "customers",
                         'attributes' => [
-                            'name' => "Vincent Kibiwot",
+                            'name' => "Create Kibiwot",
                             'email' => "vinkib2@example.com",
+                            'status' => 'archived',
                         ],
                         'relationships' => [
                              'store' => [
@@ -67,6 +68,33 @@ class LemonSqueezy
         return $response;
     }
     
+    public static function updateCustomer()
+    {
+        if (empty($apiKey = config('lemon-squeezy.api_key'))) {
+            throw new Exception('Lemon Squeezy API key not set.');
+        }
+        $storeID = config('lemon-squeezy.store');
+        $customerID = 2200355;
+        $customer = [
+                        'type' => "customers",
+                        'id' => (string) $customerID,
+                        'attributes' => [
+                            'name' => "Vincent Kibiwot Updated",
+                            'email' => "vinkib2@example1.com",
+                            'status' => 'archived',
+                        ]
+                    ];
+        
+        /** @var \Illuminate\Http\Client\Response $response */
+        $response = Http::withToken($apiKey)
+            ->withUserAgent('LemonSqueezy\Laravel/'.static::VERSION)
+            ->accept('application/vnd.api+json')
+            ->contentType('application/vnd.api+json')
+            ->patch(static::API."/customers/".$customerID, ['data' => $customer]);
+
+        return $response;
+    }
+    
     public static function subscriptions()
     {
         if (empty($apiKey = config('lemon-squeezy.api_key'))) {
@@ -82,4 +110,20 @@ class LemonSqueezy
 
         return $response;
     }
+    public static function variants()
+    {
+        if (empty($apiKey = config('lemon-squeezy.api_key'))) {
+            throw new Exception('Lemon Squeezy API key not set.');
+        }
+
+        /** @var \Illuminate\Http\Client\Response $response */
+        $response = Http::withToken($apiKey)
+            ->withUserAgent('LemonSqueezy\Laravel/'.static::VERSION)
+            ->accept('application/vnd.api+json')
+            ->contentType('application/vnd.api+json')
+            ->get(static::API."/products");
+
+        return $response;
+    }
+
 }

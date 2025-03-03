@@ -73,13 +73,7 @@ class DocumentController extends Controller
                throw new DocumentNotFoundException("Document specified not found.");
           }
 
-          $requestPayload = [
-               'api_key' => $request->bearerToken(),
-               'document_id' => $request->id,
-               'ip_address' => $request->ip()
-          ];
-
-          CreatePdfRequestReceived::dispatch($requestPayload);
+          $request->report();
 
 		$document->previewPdf();
 	}

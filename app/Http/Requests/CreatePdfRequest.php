@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Events\CreatePdfRequestReceived;
 use App\Exceptions\InactiveSubscriptionException;
 use App\Exceptions\InvalidApiKeyException;
 use Illuminate\Foundation\Http\FormRequest;
@@ -104,5 +105,21 @@ class CreatePdfRequest extends FormRequest
         return Str::lower($this->bearerToken()).'|'.$this->ip();
     }
 	
-	
+	/**
+     * Dispatch event that will log the request in database.
+     *
+     * @return bool
+     */
+    public function report()
+    {
+        $requestPayload = [
+            'api_key' => $this->bearerToken(),
+            'document_id' => $this->id,
+            'ip_address' => $this->ip()
+       ];
+
+       \Log::debug($this);
+
+       CreatePdfRequestReceived::dispatch($requestPayload);
+    }
 }

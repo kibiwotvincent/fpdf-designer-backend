@@ -4,6 +4,7 @@ namespace App\Lib\Fpdf;
 use App\Lib\Fpdf\Fpdf;
 use App\Models\Interfaces\DocumentInterface;
 use Log;
+use Str;
 
 class FpdfAdapter extends Fpdf
 {
@@ -41,8 +42,14 @@ class FpdfAdapter extends Fpdf
 	public function save() {
 		$this->Output('F', storage_path().'/app/public/'.$this->document->storageDirectory.'/'.$this->document->uuid.'.pdf');
 	}
+
+	public function createAndSavePdf() {
+		$fileName = Str::uuid();
+		$this->Output('F', storage_path().'/app/public/files/'.$fileName.'.pdf');
+	}
 	
 	public function preview() {
+		$this->createAndSavePdf();
 		header('Access-Control-Allow-Origin: *');
 		$this->Output('D', $this->document->uuid.'.pdf');
 	}

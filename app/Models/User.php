@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+
 class User extends Authenticatable
 {
-    use HasRoles, HasApiTokens, HasFactory, Notifiable;
+    use HasRoles, HasApiTokens, HasFactory, Notifiable, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -43,7 +44,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'subscription_expires_at' => 'datetime',
     ];
 	
 	public function documents() 
@@ -68,7 +68,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Determine if the user has an active subscription.
+     * Determine if the user has an active subscription whether free or paid.
      *
      * @return bool
      */
@@ -80,8 +80,8 @@ class User extends Authenticatable
             }
         } 
         else {
-            //check if subscription has expired and has exceeded allowed monthly requests
-            if($this->subscriptionHasExpired() && $this->maxRequestsExceeded()) {
+            //check if user is not subscribed and has exceeded allowed monthly requests
+            if(!$this->subscribed('default') && $this->maxRequestsExceeded()) {
                 return false;
             }
         }
@@ -89,28 +89,23 @@ class User extends Authenticatable
         return true;
     }
 
-    public function subscriptionHasExpired() {
-        $now = Carbon::now();
-        return $this->subscription_expires_at != "" &&  $now->gt($this->subscription_expires_at);
-    }
-
     /**
-     * Determine if the user has an active subscription.
+     * Determine if the user is on free plan.
      *
      * @return bool
      */
     public function isOnFreePlan() {
-        return $this->subscription_expires_at == "";
+        return !$this->subscribed('default');
     }
 
     /**
-     * Determine if the user has an active subscription.
+     * Check if user has exceeded allowed free monthly requests.
      *
      * @return bool
      */
     public function maxRequestsExceeded() {
         $currentMonth = date('m');
-        $requestsThisMonth = $this->apiRequests()->whereMonth('created_at', $currentMonth)->count();
+        $requestsThisMonth = $this->apiRequests()->viaFreePlan()->whereMonth('created_at', $currentMonth)->count();
         return ($requestsThisMonth > 100);
     }
 
@@ -130,5 +125,20 @@ class User extends Authenticatable
         return $reason;
     }
 
+    public function getSubscribedPlan($idOnly = false) {
+        if($this->isOnFreePlan()) {
+            $plan = Subscription::free();
+        }
+
+        else {
+            $subscription = $this->subscription('default');
+            if($subscription) {
+                $priceId = $subscription->stripe_price;
+                $plan = Subscription::where('stripe_price_id', $priceId)->first();
+            }
+        }
+
+        return $idOnly ? $plan->uuid : $plan;
+    }
 	
 }

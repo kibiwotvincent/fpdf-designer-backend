@@ -19,6 +19,7 @@ class CreateApiRequestsTable extends Migration
             $table->bigInteger('document_id');
             $table->text('api_key');
             $table->string('ip_address');
+            $table->unsignedBigInteger('subscription_plan_id');
             $table->timestamps();
         });
     }

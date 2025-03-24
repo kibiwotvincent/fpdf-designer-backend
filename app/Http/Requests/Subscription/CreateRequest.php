@@ -24,12 +24,14 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:100|unique:subscriptions',
+            'title' => 'required|max:100|unique:subscription_plans',
             'price' => 'required|numeric',
             'description' => 'required',
             'items' => 'required|array',
             'duration' => 'required|numeric',
             'duration_type' => 'required|string',
+            'stripe_name' => 'string|nullable',
+            'stripe_price_id' => 'string|nullable',
         ];
     }
 	

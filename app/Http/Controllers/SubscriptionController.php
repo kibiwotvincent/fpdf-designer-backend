@@ -2,16 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubscribeRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\Subscription\CreateRequest;
 use App\Http\Requests\Subscription\UpdateRequest;
 use App\Http\Resources\SubscriptionResource;
 use App\Models\Subscription;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Str;
 
 class SubscriptionController extends Controller
 {
+    public function __construct()
+    {
+        $bearerToken = request()->bearerToken();
+
+        if($bearerToken != null) {
+            //use sanctum middleware on index only
+            $this->middleware('auth:sanctum')->only('index');
+        }
+    }
+
     /**
      * Fetch available subscriptions.
      *
@@ -41,7 +54,7 @@ class SubscriptionController extends Controller
     public function view(Request $request)
     {
         $subscription = Subscription::where('uuid', $request->uuid)->withTrashed()->first();
-        $this->authorize('view', $subscription);
+        //$this->authorize('view', $subscription);
         
 		return new SubscriptionResource($subscription);
     }
@@ -64,6 +77,8 @@ class SubscriptionController extends Controller
                                         'items' => $data['items'],
                                         'duration' => $data['duration'],
                                         'duration_type' => $data['duration_type'],
+                                        'stripe_name' => $data['stripe_name'],
+                                        'stripe_price_id' => $data['stripe_price_id'],
 										]);
         
 		$subscription = (new SubscriptionResource($subscription))->toArray($request);
@@ -88,6 +103,8 @@ class SubscriptionController extends Controller
         $subscription->items = $data['items'];
         $subscription->duration = $data['duration'];
         $subscription->duration_type = $data['duration_type'];
+        $subscription->stripe_name = $data['stripe_name'];
+        $subscription->stripe_price_id = $data['stripe_price_id'];
         $subscription->save();
         
 		$subscription = (new SubscriptionResource($subscription))->toArray($request);
@@ -135,4 +152,47 @@ class SubscriptionController extends Controller
         $subscription->forceDelete();
 		return response()->json(['message' => "Subscription has been permanently deleted successfully."], 200);
 	}
+
+    public function subscribe(SubscribeRequest $request) 
+    {
+        $user = $request->user();
+        $priceId = $request->price_id;
+        $paymentMethodId = $request->payment_method;
+
+        // Update the subscription payment method
+        $user->updateDefaultPaymentMethod($paymentMethodId);
+
+
+        if ($user->isOnFreePlan()) {
+            //create new subscription
+            $user->newSubscription('default', $priceId)->create();
+        } else {
+            // Swap to the new plan with proration
+            $user->subscription('default')->swap($priceId);
+        }
+    
+        return response()->json(['message' => "Payment successful. Subscription has been activated."], 200);
+    }
+
+    public function cancel(Request $request) 
+    {
+        $user = $request->user();
+
+        if (! $user->isOnFreePlan() && !$user->subscription('default')->onGracePeriod()) {
+            $user->subscription('default')->cancel();
+        }
+    
+        return response()->json(['message' => "Subscription has been set to cancel but you still have access until the end of the billing period."], 200);
+    }
+
+    public function resume(Request $request) 
+    {
+        $user = $request->user();
+
+        if (! $user->isOnFreePlan() && $user->subscription('default')->onGracePeriod()) {
+            $user->subscription('default')->resume();
+        }
+    
+        return response()->json(['message' => "Subscription has been resumed."], 200);
+    }
 }

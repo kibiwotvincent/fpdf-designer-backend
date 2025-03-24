@@ -11,6 +11,8 @@ class Subscription extends Model
 {
     use HasFactory, SoftDeletes, UUIDable;
     
+    protected $table = 'subscription_plans';
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -24,6 +26,8 @@ class Subscription extends Model
         'items',
         'duration',
         'duration_type',
+        'stripe_name',
+        'stripe_price_id',
     ];
     
     /**
@@ -35,4 +39,9 @@ class Subscription extends Model
 		'items' => 'array',
         'deleted_at' => 'datetime',
     ];
+
+    public static function free() {
+        //get subscription plan which is the `free plan`
+        return self::where('price', 0)->first();
+    }
 }

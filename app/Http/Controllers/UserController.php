@@ -73,4 +73,54 @@ class UserController extends Controller
 		$user = (new UserResource($user))->toArray($request);
 		return Response::json(['user' => $user, 'message' => "User roles updated successfully."], 200);
     }
+
+    public function getPaymentMethods(Request $request)
+    {
+        $user = $request->user();
+        $paymentMethods = [];
+        try {
+          foreach($user->paymentMethods() as $paymentMethod) {
+            array_push($paymentMethods, $paymentMethod);
+          }
+        } catch (\Exception $e) {
+            return response()->json(['error' => "Network error. Could not connect to stripe."], 400);
+        }
+
+        return response()->json([
+            'payment_methods' => $paymentMethods,
+            'default_payment_method' => $user->defaultPaymentMethod()
+        ]);
+    }
+
+    public function getCurrentSubscriptionDetails(Request $request)
+    {
+        $user = $request->user();
+        $userSubscribedPlan = $user->getSubscribedPlan();
+
+        if ($user->isOnFreePlan()) {
+            $isFreePlan = true;
+            $isActive = true;
+            $validUntil = false;
+            $onGracePeriod = false;
+            $isCancelled = false;
+        } else {
+            $subscription = $user->subscription('default'); // Get active subscription
+            
+            $isFreePlan = false;
+            $isActive = true;
+            $validUntil = \Carbon\Carbon::createFromTimestamp($subscription->asStripeSubscription()->current_period_end)->format('F j, Y');
+            $onGracePeriod = $user->subscription('default')->onGracePeriod();
+            $isCancelled = $user->subscription('default')->cancelled();
+        }
+
+        return response()->json([
+            'id' => $userSubscribedPlan->uuid,
+            'title' => $userSubscribedPlan->title,
+            'is_active' => $isActive,
+            'is_free_plan' => $isFreePlan,
+            'valid_until' => $validUntil,
+            'is_on_grace_period' => $onGracePeriod,
+            'is_cancelled' => $isCancelled
+        ]);
+    }
 }

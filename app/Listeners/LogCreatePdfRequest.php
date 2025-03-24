@@ -39,6 +39,7 @@ class LogCreatePdfRequest implements ShouldQueue
             'api_key' => Crypt::encryptString($request['api_key']),
             'ip_address' => $request['ip_address'],
             'document_id' => $document->id,
+            'subscription_plan_id' => $user->getSubscribedPlan(true)
         ]);
     }
 }

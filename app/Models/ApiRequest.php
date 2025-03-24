@@ -19,6 +19,24 @@ class ApiRequest extends Model
         'api_key',
 		'ip_address',
         'document_id',
+        'subscription_plan_id',
     ];
+
+    public function plan() 
+	{
+		return $this->hasOne('App\Models\Subscription'::class, 'id', 'subscription_plan_id');
+	}
+
+    /**
+	 * Query scope to only include requests from free plan.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeViaFreePlan($query)
+	{
+        $freePlanId = Subscription::free()->id;
+		return $query->where('subscription_plan_id',  $freePlanId);
+	}
 	
 }

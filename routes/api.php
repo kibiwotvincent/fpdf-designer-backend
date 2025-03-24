@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\SettingController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubscriptionController;
 use App\Lib\LemonSqueezy\LemonSqueezy;
 use App\Lib\LemonSqueezy\Controllers\WebhookController;
+use Spatie\Permission\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,8 +65,20 @@ Route::post('/users/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/create-pdf/{id}', [DocumentController::class, 'createPdf']);
 	
 Route::middleware('auth:sanctum')->group(function () {
+
+	//stripe
+	Route::post('/stripe/subscribe', [SubscriptionController::class, 'subscribe']);
+	Route::post('/stripe/cancel', [SubscriptionController::class, 'cancel']);
+	Route::post('/stripe/resume', [SubscriptionController::class, 'resume']);
+	Route::post('/stripe/payment-methods', [PaymentController::class, 'storePaymentMethod']);
+	
+	Route::get('/subscription-plans', [SubscriptionController::class, 'index']);
+	Route::get('/subscription-plans/{uuid}', [SubscriptionController::class, 'view']);
+
 	Route::get('/documents', [DocumentController::class, 'index']);
 	Route::get('/api-key', [UserController::class, 'apiKey']);
+	Route::get('/stripe/payment-methods', [UserController::class, 'getPaymentMethods']);
+	Route::get('/current-subscription', [UserController::class, 'getCurrentSubscriptionDetails']);
 	Route::post('/api-key', [UserController::class, 'refreshApiKey']);
 	Route::post('/documents/{uuid}/rename', [DocumentController::class, 'renameDocument']);
 	Route::get('/documents/{uuid}/view-pdf', [DocumentController::class, 'viewPdf']);
@@ -111,4 +125,8 @@ Route::get('/customers/create', function (Request $request) {
 Route::get('/subscriptions', function (Request $request) {
     $stores = LemonSqueezy::variants();
     print($stores);
+});
+Route::get('/r', function (Request $request) {
+	Role::create(['name' => 'user', 'guard_name' => 'web']);
+	Role::create(['name' => 'admin', 'guard_name' => 'web']);
 });

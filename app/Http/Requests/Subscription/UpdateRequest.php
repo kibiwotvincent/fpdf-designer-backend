@@ -32,6 +32,8 @@ class UpdateRequest extends FormRequest
             'items' => 'required|array',
             'duration' => 'required|numeric',
             'duration_type' => 'required|string',
+            'stripe_name' => 'string|nullable',
+            'stripe_price_id' => 'string|nullable',
         ];
     }
     
